@@ -6,21 +6,21 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>이것은 테스트</title>
-  <meta name='description' content='이얗ㅎ'>
+  <title>작물 잎 사진으로 질병 분류하기</title>
+  <meta name='description' content='이미지 분류 모델을 활용하여 작물 잎 사진의 종류와 질병 유무를 분류'>
 
-  <link rel="canonical" href="/blog/test2">
+  <link rel="canonical" href="/blog/%EC%9E%91%EB%AC%BC-%EC%9E%8E-%EC%82%AC%EC%A7%84%EC%9C%BC%EB%A1%9C-%EC%A7%88%EB%B3%91-%EB%B6%84%EB%A5%98%ED%95%98%EA%B8%B0">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="이것은 테스트 – woohyeon">
-  <meta name="twitter:description" content="이얗ㅎ">
-  <meta name="twitter:image:src" content="/images/post-2.jpg">
+  <meta name="twitter:title" content="작물 잎 사진으로 질병 분류하기 – woohyeon">
+  <meta name="twitter:description" content="이미지 분류 모델을 활용하여 작물 잎 사진의 종류와 질병 유무를 분류">
+  <meta name="twitter:image:src" content="">
 
   <!-- Facebook OpenGraph -->
-  <meta property="og:title" content="이것은 테스트 – woohyeon">
-  <meta property="og:description" content="이얗ㅎ">
-  <meta property="og:image" content="/images/post-2.jpg">
+  <meta property="og:title" content="작물 잎 사진으로 질병 분류하기 – woohyeon">
+  <meta property="og:description" content="이미지 분류 모델을 활용하여 작물 잎 사진의 종류와 질병 유무를 분류">
+  <meta property="og:image" content="">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -139,12 +139,6 @@
     <div class="row">
 
       
-      <div class="col col-6 col-d-12">
-        <div class="post-image">
-          <img loading="lazy" src="/images/post-2.jpg" alt="이것은 테스트" />
-        </div>
-      </div>
-      
 
       <div class="col col-6 col-d-12">
         <div class="post__info">
@@ -152,13 +146,15 @@
           
           <div class="post-tags">
             
-              <a href="/tag/test" class="post-tags__tag">test</a>
+              <a href="/tag/다중분류" class="post-tags__tag">다중분류</a>
+            
+              <a href="/tag/tensorflow" class="post-tags__tag">tensorflow</a>
             
           </div>
           
 
 
-          <h1 class="post__title">이것은 테스트</h1>
+          <h1 class="post__title">작물 잎 사진으로 질병 분류하기</h1>
 
           <div class="post__meta">
             <div class="post__author-image">
@@ -167,7 +163,7 @@
 
             <div class="post__meta-bottom">
               <div class="post__author">Kim WooHyeon</div>
-              <time class="post__date" datetime="2021-12-11T12:01:00+00:00">11 Dec 2021</time>
+              <time class="post__date" datetime="2021-12-11T00:00:00+00:00">11 Dec 2021</time>
             </div>
           </div>
 
@@ -183,23 +179,63 @@
   <article class="post">
 
     <div class="post__content" data-cms-content-wrapper="/site/_layouts/post.html">
-      <p>한글입력 테스트</p>
+      <p>이미지 분류 모델을 활용하여 작물 잎 사진의 종류와 질병 유무를 분류해보자. 데이터는 Kaggle 데이터를 사용했다. 전이학습(Transfer Learning)에 대한 개념을 확립하고 기본 Convolutional Neural Network(CNN) 모델과 학습 방식에서 어떠한 차이점과 장점이 알아보자. 프로젝트에 사용하는 총 데이터 수는 약 40,000개이고, 분류 클래스와 각 클래스의 해당하는 데이터 수는 아래와 같습니다.</p>
 
-<p><img src="/images/image-example-1.jpg" alt="Woman with child" width="1200" height="900" /></p>
+<p>[표 삽입]</p>
 
-<p>In omni enim arte vel studio vel quavis scientia velas in ipsa virtute optimum quidque est. Quod est, ut dixi, habere ea, quae secundum naturam sint, vel omnia vel plurima et maxima. Quodsi ipsam honestatem undique pertectam atque absolutam. Tecum optime, deindestum etiam cum mediocri amico. Neque enim disputari sine reprehensione nec cum iracundia aut pertinacia recte disputari potest. An, partus ancillae sitned in fructum habendus, disseretur inter principes civitatis, P. Ut in geometria, prima si dederis, danda sunt omnia. Longum est enim ad omnia respondere, quae a te dicta sunt. Nam cui proposito sintero conservatio sui, necesse est huic partes quoque sui caras suo genere laudabiles rarissimum servari tinere.</p>
+<p>| class | images | class | images | class | images |<br />| — | — | — | — | — | — |<br />| Apple\_scab | 630 | Corn | 1,162 | Septoria\_leaf | 1,771 |</p>
 
-<blockquote>
-  <p>The longer I live, the more I realize that I am never wrong about anything, and that all the pains I have so humbly taken to verify my notions have only wasted my time!</p>
-</blockquote>
+<p>높은 성능의 이미지 분류 모델을 구축하기 위해서는 _**많은 수**_의 _**질 좋은**_ 데이터셋이 필요하다.합니다. 하지만 실제로 양질의 데이터셋을 대량으로 구하기는 매우 어렵다. 실제로 회사에서 프로젝트를 들어가게 되면 느낄 수 있다. 그렇다면 이 문제를 해결할 수 있는 방법은 무엇이 있을까? 이런 방법들을 딥러닝 개발자들이 해결했고, 우리는 그 것을 이해하고, 사용할 수 있으면 된다. </p>
 
-<p>Ego quoque, inquit, didicerim libentius si quid attuleris, quam te reprehenderim. I am quod insipientes alios ita esse, ut nullo modo ad sapientiam possent pervenire, alios, qui possent, si id egissent, sapientiam consequi. Id quaeris, inquam, in quo, utrum respondero, verses te huc atque illuc necesse est. Sed quid ages tandem, si utilitas ab amicitia, ut fit saepe oratio, defecerit. Sed isti ipsi, qui voluptate et dolore omnia metiuntur, nonne clamant sapienti plus semper adesse quod velit quam quod nolit. Quae quidem sapientes sequuntur duce natura tamquam videntes. Quod enim dissolutum sit, id esse sine sensu, quod autem sine sensu sit, id nihil ad nos pertinere omnino. Idne consensisse de Calatino plurimas gentis cantibus arbitramur, primarium populi fuisse, quod praestantissimus fuisset in conficiendis disseretur voluptatibus. Utram tandem linguam nescio. Quod dicit Epicurus voluptate terra perfectio.</p>
+<p>1.  대량의 데이터셋으로 미리 학습된 모델을 재활용한다.<br />2.  일부를 조정하여 다른 주제의 이미지 분류 모델에 사용한다.</p>
 
-<p><img src="/images/image-example-2.jpg" alt="Beach" width="1200" height="900" /></p>
+<p>이 때, 대량의 데이터셋으로 미리 학습된 모델은 _**Pre-Trained Model**_이며_**, Pre-Trained Model**_을 조정하는 과정을 _**Fine-Tuning**_이라 한다. 그리고 이 과정을 통틀어서 _**Transfer Learning**_이라 한다.</p>
 
-<p>Qua ex cognitione facilior facta est investigatio rerum occultissimarum. Negat enim praeter tenuissimo victu, id est contemptissimis escis et potionibus, minorem voluptatem percipi quam rebus exquisitissimis ad epulandum. Non enim iam stirpis bonum quaeret, sed ista animalis. Qui autem esse poteris, nisi te amor ipse ceperit? Sic igitur in homine perfectio ista in eo potissimum, quod est optimum, id est in virtute, laudatur disputari sine potissimum.</p>
+<p> </p>
 
-<p>Sin tantum modo ad indicia veteris memoriae cognoscenda, curiosorum. Haec et tu ita posuisti, et verba vestra sunt. Idemne potest esse dies saepius, qui semel fuit. Ampulla enim sit necne sit, quis non iure optimo irrideatur, si laboret? Ego vero volo in virtute vim esse quam maximam; Serpere anguiculos, nare anaticulas, evolare merulas, cornibus uti videmus boves, nepas aculeis. Archytam? Qua ex cognitione facilior facta est investiga.</p>
+<p>&gt; Pre-Trained Model</p>
+
+<p>​</p>
+
+<p>일반적으로 Pre-Trained Model은 <strong>**ImageNet**</strong>의 훈련 데이터를 이용하며, 약 1,400만개의 이미지를 1,000개의 클래스로 분류하는 학습을 한다. PyTorch의 경우에는 torchvision.models 패키지에서 ImageNet데이터를 학습해놓은 AlexNet, VGG, ResNet, SqueezeNet, DenseNet, Inception v3, GoogleLeNet, ShuffleNet v2, MobileNet v2, ResNeXt, Wide ResNet, MNASNet 등의 모델을 바로 불러올 수 있도록 지원한다.(텐서플로도 마찬가지).</p>
+
+<p>높은 성능의 이미지 분류 모델을 구축하기 위해서는 _**많은 수**_의 _**질 좋은**_ 데이터셋이 필요하다.합니다. 하지만 실제로 양질의 데이터셋을 대량으로 구하기는 매우 어렵다. 실제로 회사에서 프로젝트를 들어가게 되면 느낄 수 있다. 그렇다면 이 문제를 해결할 수 있는 방법은 무엇이 있을까? 이런 방법들을 딥러닝 개발자들이 해결했고, 우리는 그 것을 이해하고, 사용할 수 있으면 된다. </p>
+
+<p>1.  대량의 데이터셋으로 미리 학습된 모델을 재활용한다.<br />2.  일부를 조정하여 다른 주제의 이미지 분류 모델에 사용한다.</p>
+
+<p>이 때, 대량의 데이터셋으로 미리 학습된 모델은 _**Pre-Trained Model**_이며_**, Pre-Trained Model**_을 조정하는 과정을 _**Fine-Tuning**_이라 한다. 그리고 이 과정을 통틀어서 _**Transfer Learning**_이라 한다.</p>
+
+<p>&gt; Pre-Trained Model</p>
+
+<p>일반적으로 Pre-Trained Model은 **ImageNet**의 훈련 데이터를 이용하며, 약 1,400만개의 이미지를 1,000개의 클래스로 분류하는 학습을 한다. PyTorch의 경우에는 torchvision.models 패키지에서 ImageNet데이터를 학습해놓은 AlexNet, VGG, ResNet, SqueezeNet, DenseNet, Inception v3, GoogleLeNet, ShuffleNet v2, MobileNet v2, ResNeXt, Wide ResNet, MNASNet 등의 모델을 바로 불러올 수 있도록 지원한다.(텐서플로도 마찬가지).</p>
+
+<p>[https://pytorch.org/vision/stable/models.html](https://pytorch.org/vision/stable/models.html “torchvision.models”)</p>
+
+<p>[##_Image|kage@cRUcYV/btrmXu6mOFH/Yc1ih13c6B4MyfmfXXYBt0/img.png|CDM|1.3|{“originWidth”:3038,”originHeight”:1894,”style”:”alignCenter”,”caption”:”[그림 1] PyTorch 공식 문서에서 제공하는 Pre-Trained Model”,”filename”:”2021-12-03_16-34-12.png”}_##]</p>
+
+<p>&gt; Transfer Learning을 한문장으로 설명하면 대량의 데이터로 미리 학습된 모델의 Parameter 값을 불러온 후, 학습 과정에서 업데이트한다.</p>
+
+<p>Fine-Tuning이란, 볼러온 모델의 Parameter 값 일부를 분석을 원하는 데이터셋의 특성에 맞게 다시 학습하여 Parameter를 조정하는 것을 의미하는데 Pre-Trained model의 일부 Layer는 학습시에 업데이트되지 않게 하고(Freeze), 일부 Layer는 업데이트 되도록 설정한다.</p>
+
+<p>[##_Image|kage@J8Xgn/btrmYkv78Jh/moWzPhbcx3X9MqHBGaftK0/img.jpg|CDM|1.3|{“originWidth”:800,”originHeight”:204,”style”:”alignCenter”,”caption”:”[그림2] Feature Level 시각화”,”filename”:”1.jpeg”}_##]</p>
+
+<p>이미지 분류 모델은 먼저 낮은 수준의 특징(Low-Level Features)을 학습하고, 그 것을 토대로 더  높은 수준의 특정(High-Level Features)을 학습한다. Low-Level Features는 모서리와 같이 작은 지역 패턴을 의미하고, High-Level Features는 Low-Level Features로 구성된 더 큰 패턴을 의미한다. 다른 종류의 이미지라도 낮은 수준의 특징은 비슷할 가능성이 높다. 이 때문에 낮은 수준의 특징은 Freeze한다. 이 때, Freeze하는 Layer의 수는 데이터셋의 크기와 Pre-trained model에 사용된 데이터셋과 유사성을 고려하여 결정한다. </p>
+
+<p>[##_Image|kage@bBedo9/btrm2nSRHtW/bPdgUGYvFAUPpBuj37ytv0/img.png|CDM|1.3|{“originWidth”:2354,”originHeight”:1070,”style”:”alignCenter”,”caption”:”[그림 3] 데이터 크기 - 유사성 그래프”,”filename”:”2.png”}_##]</p>
+
+<p>\[그림 3\]은 우리가 가진 데이터셋의 크기와 우리의 데이터셋이 Pre-Trained Model의 학습에 사용된 데이터와 얼마나 유사한지에 따라 4가지 경우로 구분하고 있다. 모델은 이미지의 Feature를 학습하는 Convolutional Base 부분과 이미지를 분류하는 Classifier 부분으로 나뉠 수 있는데 분류하는 이미지가 다를 경우 Classifier 부분을 변경해주어야 한다.</p>
+
+<p>1사분면의 경우, **우리가 가진 데이터의 수도 많고, 원래의 학습에 이용된 데이터와의 유사도도 높다**. 이 경우에는 그림에서와 같이 일부 Layer만을 Feeze하는 것이 좋다. 데이터의 유사도가 높기 때문에 상대적으로 적은 수의 Layer만 업데이트해도 높은 성능을 낼 수 있다. </p>
+
+<p>2사분면의 경우, **우리가 가진 데이터의 수는 많지만, Pre-Trained Model의 학습에 사용된 데이터와는 유사도가 낮다.** 이 경우 \[그림 3\]에서와 같이 Pre-Trained Model을 불러온 후, 전체 Layer를 재학습하는 것이 좋다. 모든 Layer가 학습과정에서 업데이트 되지만, 모델의 효과적인 구조는 그대로 유지되고, 불러온 Parameter 값에서 조금씩 업데이트하며 조정한다는 점이 처음부터 모델을 구성하는 방법과의 차이점이 있다.</p>
+
+<p>3사분면의 경우, **우리가 가진 데이터의 수는 적지만 원래의 학습에 이용된 데이터와의 유사도가 높다.** 이 경우에는 데이터의 유사도가 높으므로  Pre-Trained Model이 학습한 많은 Feature들을 그대로 사용할 수 있지만, 일부 Layer를 재학습하기에는 과적합의 위험이 상대적으로 크다. 따라서 \[그림 3\]에서와 같이 모델의 Convolutional Base 부분 전체를 Freeze하고, Classifier 부분만 변경하는 것이 효과적이다.</p>
+
+<p>4사분면의 경우, 우리가 가진 데이터의 수는 적지만 원래의 학습에 이용된 데이터와의 유사도가 높다. 이 경우에는 데이터의 유사도가 높으므로 Pre-Trained Model이 학습한 많은 Feature들을 그대로 사용할 수 있지만, 일부 Layer를 재학습하기에는 과적합의 위험이 상대적으로 크다. 따라서 \[그림 3\]에서와 같이 모델의 Convolutional Base부분 전체를 Freeze하고, Classifier 부분만 변경하는 것이 효과적일 수 있다.</p>
+
+<p>이프로젝트에서는 ResNet50 모델을 불러온 후, Fine-Tuning하여 작물 잎을 분류하는 주제에 맞추어 사용한다.</p>
+
+<p>​</p>
 
     </div>
 
@@ -210,25 +246,25 @@
   <ul class="share__list list-reset">
     <li class="share__item">
       <a class="share__link share__twitter"
-        href="https://twitter.com/intent/tweet?text=%EC%9D%B4%EA%B2%83%EC%9D%80%20%ED%85%8C%EC%8A%A4%ED%8A%B8&url=/blog/test2"
+        href="https://twitter.com/intent/tweet?text=%EC%9E%91%EB%AC%BC%20%EC%9E%8E%20%EC%82%AC%EC%A7%84%EC%9C%BC%EB%A1%9C%20%EC%A7%88%EB%B3%91%20%EB%B6%84%EB%A5%98%ED%95%98%EA%B8%B0&url=/blog/%EC%9E%91%EB%AC%BC-%EC%9E%8E-%EC%82%AC%EC%A7%84%EC%9C%BC%EB%A1%9C-%EC%A7%88%EB%B3%91-%EB%B6%84%EB%A5%98%ED%95%98%EA%B8%B0"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__facebook"
-        href="https://www.facebook.com/sharer/sharer.php?u=/blog/test2"
+        href="https://www.facebook.com/sharer/sharer.php?u=/blog/%EC%9E%91%EB%AC%BC-%EC%9E%8E-%EC%82%AC%EC%A7%84%EC%9C%BC%EB%A1%9C-%EC%A7%88%EB%B3%91-%EB%B6%84%EB%A5%98%ED%95%98%EA%B8%B0"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__pinterest"
-        href="http://pinterest.com/pin/create/button/?url=/blog/test2&amp;media=/images/post-2.jpg&amp;description=%EC%9D%B4%EA%B2%83%EC%9D%80%20%ED%85%8C%EC%8A%A4%ED%8A%B8"
+        href="http://pinterest.com/pin/create/button/?url=/blog/%EC%9E%91%EB%AC%BC-%EC%9E%8E-%EC%82%AC%EC%A7%84%EC%9C%BC%EB%A1%9C-%EC%A7%88%EB%B3%91-%EB%B6%84%EB%A5%98%ED%95%98%EA%B8%B0&amp;media=&amp;description=%EC%9E%91%EB%AC%BC%20%EC%9E%8E%20%EC%82%AC%EC%A7%84%EC%9C%BC%EB%A1%9C%20%EC%A7%88%EB%B3%91%20%EB%B6%84%EB%A5%98%ED%95%98%EA%B8%B0"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__linkedin"
-        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/test2&title=%EC%9D%B4%EA%B2%83%EC%9D%80%20%ED%85%8C%EC%8A%A4%ED%8A%B8&summary=%EC%9D%B4%EC%96%97%E1%84%92&source=Woohyeon"
+        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/%EC%9E%91%EB%AC%BC-%EC%9E%8E-%EC%82%AC%EC%A7%84%EC%9C%BC%EB%A1%9C-%EC%A7%88%EB%B3%91-%EB%B6%84%EB%A5%98%ED%95%98%EA%B8%B0&title=%EC%9E%91%EB%AC%BC%20%EC%9E%8E%20%EC%82%AC%EC%A7%84%EC%9C%BC%EB%A1%9C%20%EC%A7%88%EB%B3%91%20%EB%B6%84%EB%A5%98%ED%95%98%EA%B8%B0&summary=%EC%9D%B4%EB%AF%B8%EC%A7%80%20%EB%B6%84%EB%A5%98%20%EB%AA%A8%EB%8D%B8%EC%9D%84%20%ED%99%9C%EC%9A%A9%ED%95%98%EC%97%AC%20%EC%9E%91%EB%AC%BC%20%EC%9E%8E%20%EC%82%AC%EC%A7%84%EC%9D%98%20%EC%A2%85%EB%A5%98%EC%99%80%20%EC%A7%88%EB%B3%91%20%EC%9C%A0%EB%AC%B4%EB%A5%BC%20%EB%B6%84%EB%A5%98&source=Woohyeon"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on LinkedIn" rel="nofollow"><i class="ion ion-logo-linkedin"></i></a>
     </li>
@@ -244,25 +280,25 @@
     <div class="col col-10 col-d-12 push-d-0 push-1">
       <div class="post__navigation animate">
   
-  <a class="post__prev" href="/blog/%EC%9E%91%EB%AC%BC-%EC%9E%8E-%EC%82%AC%EC%A7%84%EC%9C%BC%EB%A1%9C-%EC%A7%88%EB%B3%91-%EB%B6%84%EB%A5%98%ED%95%98%EA%B8%B0">
+  <a class="post__prev" href="/blog/test">
     <div class="prev__image">
-      <img loading="lazy" src="" alt="이것은 테스트">
+      <img loading="lazy" src="/images/post-2.jpg" alt="작물 잎 사진으로 질병 분류하기">
     </div>
     <div class="prev__box">
       <span class="post__nav post__nav__prev">Prev post</span>
-      <h2 class="post__nav__title">작물 잎 사진으로 질병 분류하기</h2>
+      <h2 class="post__nav__title">test</h2>
     </div>
   </a>
   
 
   
-  <a class="post__next" href="/blog/%EC%A0%9C%EB%AA%A9%EC%9D%84-%ED%95%9C%EA%B8%80%EB%A1%9C">
+  <a class="post__next" href="/blog/test2">
     <div class="next__box">
       <span class="post__nav post__nav__next">Next post</span>
-      <h2 class="post__nav__title">제목을 한글로</h2>
+      <h2 class="post__nav__title">이것은 테스트</h2>
     </div>
     <div class="next__image">
-      <img loading="lazy" src="/images/post-2.jpg" alt="이것은 테스트">
+      <img loading="lazy" src="/images/post-2.jpg" alt="작물 잎 사진으로 질병 분류하기">
     </div>
   </a>
   
@@ -279,7 +315,7 @@
 
 <!-- begin related posts -->
 <div class="container">
-  <section class="related-posts is-related animate">
+  <section class="related-posts  animate">
     <div class="row">
       <div class="col col-12">
         <div class="container__inner">
@@ -290,7 +326,9 @@
                 
                 
                   
-                    <a href="/tags#test" class="section__link related-tag">See all<span> test</span> <i class="ion ion-md-arrow-forward"></i></a>
+                    <a href="/tags#다중분류" class="section__link related-tag">See all<span> 다중분류</span> <i class="ion ion-md-arrow-forward"></i></a>
+                  
+                
                   
                 
               
@@ -306,53 +344,6 @@
             
       
             
-
-              <div class="article col col-4 col-d-6 col-t-12">
-                <div class="article__inner">
-              
-                  
-                  <div class="image-wrap">
-                    <a class="article__image" href="/blog/%EC%A0%9C%EB%AA%A9%EC%9D%84-%ED%95%9C%EA%B8%80%EB%A1%9C">
-                      <img loading="lazy" src="/images/post-2.jpg" alt="제목을 한글로">
-                    </a>
-                  </div>
-                  
-              
-                  <div class="article__content">
-              
-                    
-                    <div class="article-tags__box">
-                      
-                      <a href="/tag/test" class="article__tag">test</a>
-                      
-                    </div>
-                    
-              
-                    <h2 class="article__title">
-                      <a href="/blog/%EC%A0%9C%EB%AA%A9%EC%9D%84-%ED%95%9C%EA%B8%80%EB%A1%9C">제목을 한글로</a>
-                    </h2>
-              
-                    <p class="article__excerpt">
-                      이얗ㅎ
-                    </p>
-              
-                    <div class="article__meta">
-                      <div class="article__author-image">
-                        <img loading="lazy" src="/uploads/profile.jpeg" alt="Kim WooHyeon">
-                      </div>
-                      <div class="article-info">
-                        <div class="article__author-name">Kim WooHyeon</div>
-                        <span class="article__date"><time datetime="2021-12-11T12:01:00+00:00">11 Dec 2021</time></span>
-                      </div>
-                    </div>
-              
-                  </div>
-                </div>
-              </div>
-
-            
-                
-              
             
             
             
@@ -374,57 +365,6 @@
             
       
             
-
-              <div class="article col col-4 col-d-6 col-t-12">
-                <div class="article__inner">
-              
-                  
-                  <div class="image-wrap">
-                    <a class="article__image" href="/blog/test">
-                      <img loading="lazy" src="/images/post-2.jpg" alt="test">
-                    </a>
-                  </div>
-                  
-              
-                  <div class="article__content">
-              
-                    
-                    <div class="article-tags__box">
-                      
-                      <a href="/tag/life" class="article__tag">life</a>
-                      
-                      <a href="/tag/story" class="article__tag">story</a>
-                      
-                      <a href="/tag/test" class="article__tag">test</a>
-                      
-                    </div>
-                    
-              
-                    <h2 class="article__title">
-                      <a href="/blog/test">test</a>
-                    </h2>
-              
-                    <p class="article__excerpt">
-                      Bring to the table win-win survival strategies to ensure proactive domination. At the end of the day, going forward.
-                    </p>
-              
-                    <div class="article__meta">
-                      <div class="article__author-image">
-                        <img loading="lazy" src="/uploads/profile.jpeg" alt="Kim WooHyeon">
-                      </div>
-                      <div class="article-info">
-                        <div class="article__author-name">Kim WooHyeon</div>
-                        <span class="article__date"><time datetime="2018-11-12T12:01:35+00:00">12 Nov 2018</time></span>
-                      </div>
-                    </div>
-              
-                  </div>
-                </div>
-              </div>
-
-            
-                
-              
             
           </div>
         </div>
