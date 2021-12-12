@@ -181,17 +181,13 @@
 
 <p>1. Python 3이 운영체제에 설치되어 있는지 확인</p>
 
-<p>사전설치</p>
-
-<p>wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pinsudo mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600sudo apt-key adv –fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pubsudo add-apt-repository “deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /”sudo apt-get updatesudo apt-get -y install cuda</p>
-
 <p>2. 설치 스크립트를 다운로드</p>
 
-<p>```curl https://raw.githubusercontent.com/GoogleCloudPlatform/compute-gpu-installation/main/linux/install_gpu_driver.py –output install_gpu_driver.py```</p>
+<p><code class="language-plaintext highlighter-rouge">curl https://raw.githubusercontent.com/GoogleCloudPlatform/compute-gpu-installation/main/linux/install\_gpu\_driver.py –output install\_gpu\_driver.py</code></p>
 
 <p>3. 설치 스크립트를 실행</p>
 
-<p>```sudo python3 install_gpu_driver.py```</p>
+<p><code class="language-plaintext highlighter-rouge">sudo python3 install\_gpu\_driver.py</code></p>
 
 <p>설치 참조: <a href="https://cloud.google.com/compute/docs/gpus/install-drivers-gpu">https://cloud.google.com/compute/docs/gpus/install-drivers-gpu</a></p>
 
@@ -199,13 +195,11 @@
 
 <p>에러: NVIDIA-SMI has failed because it couldn’t communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.</p>
 
-<p>sudo apt –installed list | grep nvidia-driver</p>
-
-<p>nvidia-driver-495/unknown,now 495.29.05-0ubuntu1 amd64 [installed,automatic]</p>
-
-<p>sudo apt remove nvidia-driver-49</p>
-
-<p>sudo reboot now</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt <span class="nt">--installed</span> list | <span class="nb">grep </span>nvidia-driver
+nvidia-driver-495/unknown,now 495.29.05-0ubuntu1 amd64 <span class="o">[</span>installed,automatic]
+<span class="nb">sudo </span>apt remove nvidia-driver-49
+<span class="nb">sudo </span>reboot now
+</code></pre></div></div>
 
 <p> </p>
 
@@ -244,16 +238,11 @@
 <p><a href="https://cloud.google.com/compute/docs/gpus/monitor-gpus#virtualenv-%EC%82%AC%EC%9A%A9">virtualenv 사용</a><a href="https://cloud.google.com/compute/docs/gpus/monitor-gpus#pipenv-%EC%82%AC%EC%9A%A9">pipenv 사용</a></p>
 
 <p>virtualenv 및 pip를 사용하는 경우 가상 환경을 만들어야 합니다. 환경을 만들려면 다음 명령어를 실행합니다.</p>
-
-<p>cd /opt/google/compute-gpu-monitoring/linux</p>
-
-<p> </p>
-
-<p>sudo apt-get -y install python3-venv</p>
-
-<p>sudo python3 -m venv venv</p>
-
-<p>sudo venv/bin/pip install wheel sudo venv/bin/pip install -Ur requirements.txt</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /opt/google/compute-gpu-monitoring/linux
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>python3-venv
+<span class="nb">sudo </span>python3 <span class="nt">-m</span> venv venv
+<span class="nb">sudo </span>venv/bin/pip <span class="nb">install </span>wheel <span class="nb">sudo </span>venv/bin/pip <span class="nb">install</span> <span class="nt">-Ur</span> requirements.txt
+</code></pre></div></div>
 
 <h3 id="시스템-부팅-시-에이전트-시작">시스템 부팅 시 에이전트 시작</h3>
 
@@ -263,15 +252,11 @@
 
 <p>google_gpu_monitoring_agent_venv.service 파일에는 virtualenv를 사용한 설치를 위해 준비된 systemd에 대한 서비스 정의가 포함되어 있습니다.</p>
 
-<p>cd /opt/google/compute-gpu-monitoring/linux</p>
-
-<p>sudo apt-get -y install python3-venv</p>
-
-<p>sudo python3 -m venv venv</p>
-
-<p>sudo venv/bin/pip install wheel</p>
-
-<p>sudo venv/bin/pip install -Ur requirements.txt</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /opt/google/compute-gpu-monitoring/linux
+<span class="nb">sudo </span>python3 <span class="nt">-m</span> venv venv
+<span class="nb">sudo </span>venv/bin/pip <span class="nb">install </span>wheel
+<span class="nb">sudo </span>venv/bin/pip <span class="nb">install</span> <span class="nt">-Ur</span> requirements.txt
+</code></pre></div></div>
 
 <h2 id="cloud-monitoring에서-측정항목-검토">Cloud Monitoring에서 측정항목 검토</h2>
 
