@@ -6,20 +6,20 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>GCP google instance에 GPU Driver 설치</title>
-  <meta name='description' content='구글 GCP VM에서 GPU드라이버를 설치'>
+  <title>GCP VM에 Google Cloud Storage Mount</title>
+  <meta name='description' content='GCP VM에 Google Cloud Storage Mount하기'>
 
-  <link rel="canonical" href="/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98">
+  <link rel="canonical" href="/blog/mount-google-storage-into-gcp-vm">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="GCP google instance에 GPU Driver 설치 – woohyeon">
-  <meta name="twitter:description" content="구글 GCP VM에서 GPU드라이버를 설치">
+  <meta name="twitter:title" content="GCP VM에 Google Cloud Storage Mount – woohyeon">
+  <meta name="twitter:description" content="GCP VM에 Google Cloud Storage Mount하기">
   <meta name="twitter:image:src" content="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png">
 
   <!-- Facebook OpenGraph -->
-  <meta property="og:title" content="GCP google instance에 GPU Driver 설치 – woohyeon">
-  <meta property="og:description" content="구글 GCP VM에서 GPU드라이버를 설치">
+  <meta property="og:title" content="GCP VM에 Google Cloud Storage Mount – woohyeon">
+  <meta property="og:description" content="GCP VM에 Google Cloud Storage Mount하기">
   <meta property="og:image" content="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png">
 
   <!-- Fonts -->
@@ -142,7 +142,7 @@
       
       <div class="col col-6 col-d-12">
         <div class="post-image">
-          <img loading="lazy" src="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png" alt="GCP google instance에 GPU Driver 설치" />
+          <img loading="lazy" src="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png" alt="GCP VM에 Google Cloud Storage Mount" />
         </div>
       </div>
       
@@ -155,13 +155,13 @@
             
               <a href="/tag/gcp" class="post-tags__tag">gcp</a>
             
-              <a href="/tag/gpu monitoring" class="post-tags__tag">GPU monitoring</a>
+              <a href="/tag/google cloud storage" class="post-tags__tag">google cloud storage</a>
             
           </div>
           
 
 
-          <h1 class="post__title">GCP google instance에 GPU Driver 설치</h1>
+          <h1 class="post__title">GCP VM에 Google Cloud Storage Mount</h1>
 
           <div class="post__meta">
             <div class="post__author-image">
@@ -186,127 +186,62 @@
   <article class="post">
 
     <div class="post__content" data-cms-content-wrapper="/site/_layouts/post.html">
-      <h2 id="1-gcp-vm에-gpu-설치">1. GCP-VM에 GPU 설치</h2>
-
-<p><strong>지원되는 운영체제</strong></p>
-
-<p>해당 VM은 Ubuntu 18.04 LTS 버전에서 설치하였다. <code class="language-plaintext highlighter-rouge">google cloud console</code>에서 <code class="language-plaintext highlighter-rouge">ssh</code>를 눌러 <code class="language-plaintext highlighter-rouge">google cloud terminal</code>을 연다.</p>
-
-<figure style="text-align:center;"><img width="2940" height="512" src="/uploads/7.png" /><figcaption>Figure 1. Google Cloud Console</figcaption></figure>
-
-<p>SSH연결을 누르게 되면 아래와 같은 화면이 나오게 된다.</p>
-
-<figure style="text-align:center;"><img width="1800" height="512" src="/uploads/6.png" /><figcaption>Figure 2. Google Cloud Terminal 열린 모습</figcaption></figure>
-
-<p>구글 VM 할당 후 터미널에서 다음을 입력한다.</p>
+      <!-- 포스트 이미지 폴더: /images/mount-google-storage-into-gcp-vm/ -->
+<h1>Google Compute Engine 에 Cloud Storage 마운트하기</h1>
 
 <ol>
-  <li>Python 3이 운영체제에 설치되어 있는지 확인</li>
-  <li>설치 스크립트를 다운로드</li>
+  <li>Cloud Storage bucket</li>
+  <li>Cloud Engine</li>
+  <li>gcsfuse</li>
 </ol>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl https://raw.githubusercontent.com/GoogleCloudPlatform/compute-gpu-installation/main/linux/install_gpu_driver.py –output install_gpu_driver.py
-</code></pre></div></div>
+<h2>1. Compute Engine 만들기</h2>
+<p>Cloude Storage Bucket을 마운트하기 위해서는 gcsfuse가 필요하다.</p>
+
+<blockquote>
+  <em>Cloud Storage FUSE는 Cloud Storage 버킷을 Linux 또는 macOS 시스템에 파일 시스템으로 마운트할 수 있는 오픈소스 FUSE 어댑터입니다. Google Compute Engine VM 또는 온프레미스 시스템1을 포함하여 Cloud Storage와 연결된 모든 위치에서 Cloud Storage FUSE를 실행할 수 있습니다.
+  <a href="https://cloud.google.com/storage/docs/gcs-fuse#using_feat_name">https://cloud.google.com/storage/docs/gcs-fuse#using_feat_name</a>  
+  </em>
+</blockquote>
+
+<p>먼저 Google Cloud VM에 접속한다.</p>
 
 <ol>
-  <li>설치 스크립트를 실행
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>python3 install_gpu_driver.py
+  <li>gcsfuse 배포 URL을 패키지 소스로 추가하고 공개 키를 가져온다.
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">GCSFUSE_REPO</span><span class="o">=</span>gcsfuse-<span class="sb">`</span>lsb_release <span class="nt">-c</span> <span class="nt">-s</span><span class="sb">`</span>
+<span class="nb">echo</span> <span class="s2">"deb http://packages.cloud.google.com/apt </span><span class="nv">$GCSFUSE_REPO</span><span class="s2"> main"</span> | <span class="nb">sudo tee</span> /etc/apt/sources.list.d/gcsfuse.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | <span class="nb">sudo </span>apt-key add -
+</code></pre></div>    </div>
+  </li>
+  <li>사용 가능한 패키지 목록을 업데이트 하고 gcsfuse를 설치한다.
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>gcsfuse
+</code></pre></div>    </div>
+  </li>
+  <li>gcsfuse에 대한 향후 업데이트는 다음과 같은 일반적인 방법으로 설치할 수 있다.
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get update <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt-get <span class="nt">-y</span> upgrade
 </code></pre></div>    </div>
   </li>
 </ol>
 
-<p>GPU 드라이버 설치가 잘 안된다면 아래 구글 공식문서를 참고한다.
-설치 참조: <a href="https://cloud.google.com/compute/docs/gpus/install-drivers-gpu">https://cloud.google.com/compute/docs/gpus/install-drivers-gpu</a></p>
-
-<p>만약에 <code class="language-plaintext highlighter-rouge">sudo nvidia-smi</code>를 입력했을 때</p>
-<pre><code class="language-txt">NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
-</code></pre>
-<p>와 같은 에러가 나타난다면 gpu 드라이버를 지웠다가 다시 설치하자.</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt <span class="nt">--installed</span> list | <span class="nb">grep </span>nvidia-driver
-nvidia-driver-<span class="o">{</span>gpu 버전<span class="o">}</span>/unknown,now 495.29.05-0ubuntu1 amd64 <span class="o">[</span>installed,automatic]
-<span class="nb">sudo </span>apt remove nvidia-driver-<span class="o">{</span>gpu 버전<span class="o">}</span>
-<span class="nb">sudo </span>reboot now <span class="c"># 재부팅을 하지 않으면 적용되지 않는다.</span>
-</code></pre></div></div>
-
 <hr />
 
-<h2 id="2-gpu-측정항목-모니터링-설정">2. GPU 측정항목 모니터링 설정</h2>
-
-<p>기본적으로 <strong>Google Cloud Platform</strong>에는 다양한 리소스 모니터링을 제공하지만 <strong>GPU 모니터링은 제공하지 않는다.</strong> 따라서 GPU관련 모듈을 설치하고 <code class="language-plaintext highlighter-rouge">Google Cloud Platform</code>으로 연결한다.</p>
-
-<p>기본적으로 공식문서를 따르면 문제 없을 것이다.
-<a href="https://cloud.google.com/compute/docs/gpus/monitor-gpus">GCP와 GPU 연결</a></p>
-
-<h3 id="요구사항">요구사항</h3>
-
-<p>각 VM에서 다음 요구사항이 충족되는지 확인합니다.</p>
-
-<!-- <blockqutoe/> -->
-<blockquote>
-  <ul>
-    <li>각 VM에는 <a href="https://cloud.google.com/compute/docs/gpus/create-vm-with-gpus">GPU 연결</a>완료된 상태여야 합니다.</li>
-    <li>각 VM에는 <a href="https://cloud.google.com/compute/docs/gpus/nstall-drivers-gpu#install-gpu-driver">GPU 드라이버 설치</a>가 완료된 상태여야 합니다.</li>
-    <li>각 VM에는 Python 3.6 이상이 설치되어 있어야 합니다.</li>
-    <li>각 VM에는 Python 가상 환경을 만드는 데 필요한 패키지가 있어야 합니다.</li>
-  </ul>
-</blockquote>
-
-<p><br /></p>
-
-<h3 id="에이전트-다운로드">에이전트 다운로드</h3>
-
-<p>모니터링 스크립트를 /opt/google 디렉터리에 다운로드합니다. 다음 두 가지 기본 옵션(git, curl)이 있지만 여기서는 <code class="language-plaintext highlighter-rouge">git</code>을 사용하기로 한다.</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># We need to use sudo to be able to write to /opt </span>
-<span class="nb">sudo mkdir</span> <span class="nt">-p</span> /opt/google 
-<span class="nb">cd</span> /opt/google 
-<span class="nb">sudo </span>git clone https://github.com/GoogleCloudPlatform/compute-gpu-monitoring.git
+<h2>2. 버킷 마운트하기</h2>
+<h3>사전준비</h3>
+<p>처음에 google-cloud와 로그인 인증을 해준다.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud auth login
+</code></pre></div></div>
+<p>크롬 브라우저에서 로그인 설정을 해준다. 이게 완료되어야 다음단계로 진행된다.</p>
+<h3>버킷마운트</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> /path/to/mount/point
+gcsfuse <span class="o">{</span>google_cloud_bucket<span class="o">}</span> /path/to/mount/point <span class="nt">--implicit-dirs</span>
 </code></pre></div></div>
 
-<h3 id="가상-환경-설정">가상 환경 설정</h3>
+<p>gcsfuse 를 이용하면 google cloud storage 를 파일시스템으로 mount를 시킬 수 있다. 이 때 중요한 것은 –implicit-dirs 옵션을 붙여주여야 디렉토리 구조가 보인다는 것이다.</p>
 
-<p>모니터링 스크립트를 사용하려면 필요한 모듈을 설치해야 합니다. 기본 Python 설치와 별개로 이 모듈에 대해 가상 환경을 만드는 것이 좋습니다.pipenv, virtualenv 2개중 하나를 이용할 수 있으나 여기서는 virtualenv를 사용한다.</p>
-
-<p>virtualenv 및 pip를 사용하는 경우 가상 환경을 만들어야 하는데 환경을 만들려면 다음 명령어를 실행한다.</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /opt/google/compute-gpu-monitoring/linux
-<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>python3-venv
-<span class="nb">sudo </span>python3 <span class="nt">-m</span> venv venv
-<span class="nb">sudo </span>venv/bin/pip <span class="nb">install </span>wheel <span class="nb">sudo </span>venv/bin/pip <span class="nb">install</span> <span class="nt">-Ur</span> requirements.txt
+<p>언마운트는 다음과 같이 진행한다.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fusermount <span class="nt">-u</span> /path/to/mount/point
 </code></pre></div></div>
-
-<h3 id="시스템-부팅-시-에이전트-시작">시스템 부팅 시 에이전트 시작</h3>
-
-<p>서비스 관리를 위해 systemd를 사용하여 시스템에서는 다음 단계를 수행하여 자동으로 시작되는 서비스 목록에 GPU 모니터링 에이전트를 추가한다.</p>
-
-<p><code class="language-plaintext highlighter-rouge">google_gpu_monitoring_agent_venv.service</code> 파일에는 virtualenv를 사용한 설치를 위해 준비된 systemd에 대한 서비스 정의가 포함되어 있다.</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /opt/google/compute-gpu-monitoring/linux
-<span class="nb">sudo </span>python3 <span class="nt">-m</span> venv venv
-<span class="nb">sudo </span>venv/bin/pip <span class="nb">install </span>wheel
-<span class="nb">sudo </span>venv/bin/pip <span class="nb">install</span> <span class="nt">-Ur</span> requirements.txt
-</code></pre></div></div>
-
-<h2 id="cloud-monitoring에서-측정항목-검토">Cloud Monitoring에서 측정항목 검토</h2>
-
-<ol>
-  <li>Google Cloud Console에서 <strong>측정항목 탐색기</strong> 페이지로 이동합니다.<a href="https://console.cloud.google.com/monitoring/metrics-explorer" target="console">Monitoring으로 이동</a></li>
-  <li><strong>리소스 유형</strong> 드롭다운에서 <strong>VM 인스턴스</strong>를 선택합니다.</li>
-</ol>
-
-<figure style="text-align:center;"><img src="/uploads/3.png" /><figcaption>Figure 3. 리소스 유형 선택</figcaption></figure>
-
-<ol>
-  <li><strong>측정항목</strong> 드롭다운에서 <code class="language-plaintext highlighter-rouge">custom/instance/gpu/utilization</code>을 입력합니다.</li>
-</ol>
-
-<figure style="text-align:center;"><img src="/uploads/4.png" /><figcaption>Figure 4. gpu utilization 입력</figcaption></figure>
-
-<figure style="text-align:center;"><img src="/uploads/5.png" /><figcaption>Figure 5. gpu utilization 입력</figcaption></figure>
-
-<p><strong>참고:</strong> 커스텀 측정항목이 표시되는 데 다소 시간이 걸릴 수 있으며, 다음 결과와 유사한 GPU 사용률이 나온다.</p>
-
 
     </div>
 
@@ -317,25 +252,25 @@ nvidia-driver-<span class="o">{</span>gpu 버전<span class="o">}</span>/unknown
   <ul class="share__list list-reset">
     <li class="share__item">
       <a class="share__link share__twitter"
-        href="https://twitter.com/intent/tweet?text=GCP%20google%20instance%EC%97%90%20GPU%20Driver%20%EC%84%A4%EC%B9%98&url=/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98"
+        href="https://twitter.com/intent/tweet?text=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount&url=/blog/mount-google-storage-into-gcp-vm"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__facebook"
-        href="https://www.facebook.com/sharer/sharer.php?u=/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98"
+        href="https://www.facebook.com/sharer/sharer.php?u=/blog/mount-google-storage-into-gcp-vm"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__pinterest"
-        href="http://pinterest.com/pin/create/button/?url=/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98&amp;media=/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png&amp;description=GCP%20google%20instance%EC%97%90%20GPU%20Driver%20%EC%84%A4%EC%B9%98"
+        href="http://pinterest.com/pin/create/button/?url=/blog/mount-google-storage-into-gcp-vm&amp;media=/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png&amp;description=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__linkedin"
-        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98&title=GCP%20google%20instance%EC%97%90%20GPU%20Driver%20%EC%84%A4%EC%B9%98&summary=%EA%B5%AC%EA%B8%80%20GCP%20VM%EC%97%90%EC%84%9C%20GPU%EB%93%9C%EB%9D%BC%EC%9D%B4%EB%B2%84%EB%A5%BC%20%EC%84%A4%EC%B9%98&source=Woohyeon"
+        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/mount-google-storage-into-gcp-vm&title=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount&summary=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount%ED%95%98%EA%B8%B0&source=Woohyeon"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on LinkedIn" rel="nofollow"><i class="ion ion-logo-linkedin"></i></a>
     </li>
@@ -351,25 +286,25 @@ nvidia-driver-<span class="o">{</span>gpu 버전<span class="o">}</span>/unknown
     <div class="col col-10 col-d-12 push-d-0 push-1">
       <div class="post__navigation animate">
   
-  <a class="post__prev" href="/blog/test">
+  <a class="post__prev" href="/blog/%EC%9E%91%EB%AC%BC-%EC%9E%8E-%EC%82%AC%EC%A7%84%EC%9C%BC%EB%A1%9C-%EC%A7%88%EB%B3%91-%EB%B6%84%EB%A5%98%ED%95%98%EA%B8%B0">
     <div class="prev__image">
-      <img loading="lazy" src="/images/post-2.jpg" alt="GCP google instance에 GPU Driver 설치">
+      <img loading="lazy" src="/uploads/2021-12-11-20-21-13.png" alt="GCP VM에 Google Cloud Storage Mount">
     </div>
     <div class="prev__box">
       <span class="post__nav post__nav__prev">Prev post</span>
-      <h2 class="post__nav__title">test</h2>
+      <h2 class="post__nav__title">작물 잎 사진으로 질병 분류하기</h2>
     </div>
   </a>
   
 
   
-  <a class="post__next" href="/blog/%EC%9E%91%EB%AC%BC-%EC%9E%8E-%EC%82%AC%EC%A7%84%EC%9C%BC%EB%A1%9C-%EC%A7%88%EB%B3%91-%EB%B6%84%EB%A5%98%ED%95%98%EA%B8%B0">
+  <a class="post__next" href="/blog/test2">
     <div class="next__box">
       <span class="post__nav post__nav__next">Next post</span>
-      <h2 class="post__nav__title">작물 잎 사진으로 질병 분류하기</h2>
+      <h2 class="post__nav__title">이것은 테스트</h2>
     </div>
     <div class="next__image">
-      <img loading="lazy" src="/uploads/2021-12-11-20-21-13.png" alt="GCP google instance에 GPU Driver 설치">
+      <img loading="lazy" src="/images/post-2.jpg" alt="GCP VM에 Google Cloud Storage Mount">
     </div>
   </a>
   
@@ -429,14 +364,28 @@ nvidia-driver-<span class="o">{</span>gpu 버전<span class="o">}</span>/unknown
             
       
             
+            
+            
+            
+      
+            
+      
+            
+            
+            
+            
+      
+            
+      
+            
 
               <div class="article col col-4 col-d-6 col-t-12">
                 <div class="article__inner">
               
                   
                   <div class="image-wrap">
-                    <a class="article__image" href="/blog/mount-google-storage-into-gcp-vm">
-                      <img loading="lazy" src="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png" alt="GCP VM에 Google Cloud Storage Mount">
+                    <a class="article__image" href="/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98">
+                      <img loading="lazy" src="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png" alt="GCP google instance에 GPU Driver 설치">
                     </a>
                   </div>
                   
@@ -448,17 +397,17 @@ nvidia-driver-<span class="o">{</span>gpu 버전<span class="o">}</span>/unknown
                       
                       <a href="/tag/gcp" class="article__tag">gcp</a>
                       
-                      <a href="/tag/google cloud storage" class="article__tag">google cloud storage</a>
+                      <a href="/tag/gpu monitoring" class="article__tag">GPU monitoring</a>
                       
                     </div>
                     
               
                     <h2 class="article__title">
-                      <a href="/blog/mount-google-storage-into-gcp-vm">GCP VM에 Google Cloud Storage Mount</a>
+                      <a href="/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98">GCP google instance에 GPU Driver 설치</a>
                     </h2>
               
                     <p class="article__excerpt">
-                      GCP VM에 Google Cloud Storage Mount하기
+                      구글 GCP VM에서 GPU드라이버를 설치
                     </p>
               
                     <div class="article__meta">
@@ -478,20 +427,6 @@ nvidia-driver-<span class="o">{</span>gpu 버전<span class="o">}</span>/unknown
             
                 
               
-            
-            
-            
-      
-            
-      
-            
-            
-            
-            
-      
-            
-      
-            
             
             
             
