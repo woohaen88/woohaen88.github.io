@@ -215,7 +215,7 @@ curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | <span class="nb">su
   </li>
   <li>사용 가능한 패키지 목록을 업데이트 하고 gcsfuse를 설치한다.
     <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get update
-<span class="nb">sudo </span>apt-get <span class="nb">install </span>gcsfuse
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>gcsfuse
 </code></pre></div>    </div>
   </li>
   <li>gcsfuse에 대한 향후 업데이트는 다음과 같은 일반적인 방법으로 설치할 수 있다.
@@ -234,7 +234,7 @@ curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | <span class="nb">su
 <p>크롬 브라우저에서 로그인 설정을 해준다. 이게 완료되어야 다음단계로 진행된다.</p>
 <h3>버킷마운트</h3>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> /path/to/mount/point
-gcsfuse <span class="o">{</span>google_cloud_bucket<span class="o">}</span> /path/to/mount/point <span class="nt">--implicit-dirs</span>
+gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_cloud_bucket<span class="o">}</span> /path/to/mount/point
 </code></pre></div></div>
 
 <p>gcsfuse 를 이용하면 google cloud storage 를 파일시스템으로 mount를 시킬 수 있다. 이 때 중요한 것은 –implicit-dirs 옵션을 붙여주여야 디렉토리 구조가 보인다는 것이다.</p>
