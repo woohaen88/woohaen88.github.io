@@ -6,21 +6,21 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>GCP VM에 Google Cloud Storage Mount</title>
+  <title>Linear Regression(Basic)</title>
   <meta name='description' content='GCP VM에 Google Cloud Storage Mount하기'>
 
-  <link rel="canonical" href="/blog/mount-google-storage-into-gcp-vm">
+  <link rel="canonical" href="/blog/linear-regression">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="GCP VM에 Google Cloud Storage Mount – woohyeon">
+  <meta name="twitter:title" content="Linear Regression(Basic) – woohyeon">
   <meta name="twitter:description" content="GCP VM에 Google Cloud Storage Mount하기">
-  <meta name="twitter:image:src" content="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png">
+  <meta name="twitter:image:src" content="/images/posts/Linear_regression/thumbnail.png">
 
   <!-- Facebook OpenGraph -->
-  <meta property="og:title" content="GCP VM에 Google Cloud Storage Mount – woohyeon">
+  <meta property="og:title" content="Linear Regression(Basic) – woohyeon">
   <meta property="og:description" content="GCP VM에 Google Cloud Storage Mount하기">
-  <meta property="og:image" content="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png">
+  <meta property="og:image" content="/images/posts/Linear_regression/thumbnail.png">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -142,7 +142,7 @@
       
       <div class="col col-6 col-d-12">
         <div class="post-image">
-          <img loading="lazy" src="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png" alt="GCP VM에 Google Cloud Storage Mount" />
+          <img loading="lazy" src="/images/posts/Linear_regression/thumbnail.png" alt="Linear Regression(Basic)" />
         </div>
       </div>
       
@@ -153,15 +153,13 @@
           
           <div class="post-tags">
             
-              <a href="/tag/gcp" class="post-tags__tag">gcp</a>
-            
-              <a href="/tag/google cloud storage" class="post-tags__tag">google cloud storage</a>
+              <a href="/tag/pytorch" class="post-tags__tag">pytorch</a>
             
           </div>
           
 
 
-          <h1 class="post__title">GCP VM에 Google Cloud Storage Mount</h1>
+          <h1 class="post__title">Linear Regression(Basic)</h1>
 
           <div class="post__meta">
             <div class="post__author-image">
@@ -170,7 +168,7 @@
 
             <div class="post__meta-bottom">
               <div class="post__author">Kim WooHyeon</div>
-              <time class="post__date" datetime="2021-12-11T00:00:00+00:00">11 Dec 2021</time>
+              <time class="post__date" datetime="2021-12-21T00:00:00+00:00">21 Dec 2021</time>
             </div>
           </div>
 
@@ -187,61 +185,14 @@
 
     <div class="post__content" data-cms-content-wrapper="/site/_layouts/post.html">
       <!-- 포스트 이미지 폴더: /images/mount-google-storage-into-gcp-vm/ -->
-<h1>Google Compute Engine 에 Cloud Storage 마운트하기</h1>
+<h1>Linear Regression(Basic)</h1>
 
-<ol>
-  <li>Cloud Storage bucket</li>
-  <li>Cloud Engine</li>
-  <li>gcsfuse</li>
-</ol>
-
-<h2>1. Compute Engine 만들기</h2>
-<p>Cloude Storage Bucket을 마운트하기 위해서는 gcsfuse가 필요하다.</p>
-
-<blockquote>
-  <em>Cloud Storage FUSE는 Cloud Storage 버킷을 Linux 또는 macOS 시스템에 파일 시스템으로 마운트할 수 있는 오픈소스 FUSE 어댑터입니다. Google Compute Engine VM 또는 온프레미스 시스템1을 포함하여 Cloud Storage와 연결된 모든 위치에서 Cloud Storage FUSE를 실행할 수 있습니다.
-  <a href="https://cloud.google.com/storage/docs/gcs-fuse#using_feat_name">https://cloud.google.com/storage/docs/gcs-fuse#using_feat_name</a>  
-  </em>
-</blockquote>
-
-<p>먼저 Google Cloud VM에 접속한다.</p>
-
-<ol>
-  <li>gcsfuse 배포 URL을 패키지 소스로 추가하고 공개 키를 가져온다.
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">GCSFUSE_REPO</span><span class="o">=</span>gcsfuse-<span class="sb">`</span>lsb_release <span class="nt">-c</span> <span class="nt">-s</span><span class="sb">`</span>
-<span class="nb">echo</span> <span class="s2">"deb http://packages.cloud.google.com/apt </span><span class="nv">$GCSFUSE_REPO</span><span class="s2"> main"</span> | <span class="nb">sudo tee</span> /etc/apt/sources.list.d/gcsfuse.list
-curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | <span class="nb">sudo </span>apt-key add -
-</code></pre></div>    </div>
-  </li>
-  <li>사용 가능한 패키지 목록을 업데이트 하고 gcsfuse를 설치한다.
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get update
-<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>gcsfuse
-</code></pre></div>    </div>
-  </li>
-  <li>gcsfuse에 대한 향후 업데이트는 다음과 같은 일반적인 방법으로 설치할 수 있다.
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get update <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt-get <span class="nt">-y</span> upgrade
-</code></pre></div>    </div>
-  </li>
-</ol>
-
-<hr />
-
-<h2>2. 버킷 마운트하기</h2>
-<h3>사전준비</h3>
-<p>처음에 google-cloud와 로그인 인증을 해준다.</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud auth login
-</code></pre></div></div>
-<p>크롬 브라우저에서 로그인 설정을 해준다. 이게 완료되어야 다음단계로 진행된다.</p>
-<h3>버킷마운트</h3>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> /path/to/mount/point
-gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_cloud_bucket<span class="o">}</span> /path/to/mount/point
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 </code></pre></div></div>
 
-<p>gcsfuse 를 이용하면 google cloud storage 를 파일시스템으로 mount를 시킬 수 있다. 이 때 중요한 것은 –implicit-dirs 옵션을 붙여주여야 디렉토리 구조가 보인다는 것이다.</p>
-
-<p>언마운트는 다음과 같이 진행한다.</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fusermount <span class="nt">-u</span> /path/to/mount/point
-</code></pre></div></div>
+<figure style="text-align:center;"><img width="2940" height="512" src="/images/posts/Linear_regression/loss_and_epoch.png" />
+  <figcaption style="font-size: 0.8rem; margin-top: 1rem;">Figure 1. epoch에 따른 loss의 변화)</figcaption>
+</figure>
 
     </div>
 
@@ -252,25 +203,25 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
   <ul class="share__list list-reset">
     <li class="share__item">
       <a class="share__link share__twitter"
-        href="https://twitter.com/intent/tweet?text=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount&url=/blog/mount-google-storage-into-gcp-vm"
+        href="https://twitter.com/intent/tweet?text=Linear%20Regression(Basic)&url=/blog/linear-regression"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__facebook"
-        href="https://www.facebook.com/sharer/sharer.php?u=/blog/mount-google-storage-into-gcp-vm"
+        href="https://www.facebook.com/sharer/sharer.php?u=/blog/linear-regression"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__pinterest"
-        href="http://pinterest.com/pin/create/button/?url=/blog/mount-google-storage-into-gcp-vm&amp;media=/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png&amp;description=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount"
+        href="http://pinterest.com/pin/create/button/?url=/blog/linear-regression&amp;media=/images/posts/Linear_regression/thumbnail.png&amp;description=Linear%20Regression(Basic)"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__linkedin"
-        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/mount-google-storage-into-gcp-vm&title=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount&summary=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount%ED%95%98%EA%B8%B0&source=Woohyeon"
+        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/linear-regression&title=Linear%20Regression(Basic)&summary=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount%ED%95%98%EA%B8%B0&source=Woohyeon"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on LinkedIn" rel="nofollow"><i class="ion ion-logo-linkedin"></i></a>
     </li>
@@ -286,25 +237,25 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
     <div class="col col-10 col-d-12 push-d-0 push-1">
       <div class="post__navigation animate">
   
-  <a class="post__prev" href="/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98">
+  <a class="post__prev" href="/blog/mount-google-storage-into-gcp-vm">
     <div class="prev__image">
-      <img loading="lazy" src="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png" alt="GCP VM에 Google Cloud Storage Mount">
+      <img loading="lazy" src="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png" alt="Linear Regression(Basic)">
     </div>
     <div class="prev__box">
       <span class="post__nav post__nav__prev">Prev post</span>
-      <h2 class="post__nav__title">GCP google instance에 GPU Driver 설치</h2>
+      <h2 class="post__nav__title">GCP VM에 Google Cloud Storage Mount</h2>
     </div>
   </a>
   
 
   
-  <a class="post__next" href="/blog/linear-regression">
+  <a class="post__next" href="/blog/dataset-and-dataloader">
     <div class="next__box">
       <span class="post__nav post__nav__next">Next post</span>
-      <h2 class="post__nav__title">Linear Regression(Basic)</h2>
+      <h2 class="post__nav__title">Dataset과 과대적합</h2>
     </div>
     <div class="next__image">
-      <img loading="lazy" src="/images/posts/Linear_regression/thumbnail.png" alt="GCP VM에 Google Cloud Storage Mount">
+      <img loading="lazy" src="/images/posts/02_dataset_and_dataloader/thumbnail.png" alt="Linear Regression(Basic)">
     </div>
   </a>
   
@@ -332,9 +283,7 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
                 
                 
                   
-                    <a href="/tags#gcp" class="section__link related-tag">See all<span> gcp</span> <i class="ion ion-md-arrow-forward"></i></a>
-                  
-                
+                    <a href="/tags#pytorch" class="section__link related-tag">See all<span> pytorch</span> <i class="ion ion-md-arrow-forward"></i></a>
                   
                 
               
@@ -350,35 +299,14 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
             
       
             
-            
-            
-            
-      
-            
-      
-            
-            
-            
-            
-      
-            
-      
-            
-            
-            
-            
-      
-            
-      
-            
 
               <div class="article col col-4 col-d-6 col-t-12">
                 <div class="article__inner">
               
                   
                   <div class="image-wrap">
-                    <a class="article__image" href="/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98">
-                      <img loading="lazy" src="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png" alt="GCP google instance에 GPU Driver 설치">
+                    <a class="article__image" href="/blog/dataset-and-dataloader">
+                      <img loading="lazy" src="/images/posts/02_dataset_and_dataloader/thumbnail.png" alt="Dataset과 과대적합">
                     </a>
                   </div>
                   
@@ -388,19 +316,25 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
                     
                     <div class="article-tags__box">
                       
-                      <a href="/tag/gcp" class="article__tag">gcp</a>
+                      <a href="/tag/pytorch" class="article__tag">pytorch</a>
                       
-                      <a href="/tag/gpu monitoring" class="article__tag">GPU monitoring</a>
+                      <a href="/tag/dataset" class="article__tag">Dataset</a>
+                      
+                      <a href="/tag/dataloader" class="article__tag">DataLoader</a>
+                      
+                      <a href="/tag/dropout" class="article__tag">Dropout</a>
+                      
+                      <a href="/tag/batchnormalization" class="article__tag">BatchNormalization</a>
                       
                     </div>
                     
               
                     <h2 class="article__title">
-                      <a href="/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98">GCP google instance에 GPU Driver 설치</a>
+                      <a href="/blog/dataset-and-dataloader">Dataset과 과대적합</a>
                     </h2>
               
                     <p class="article__excerpt">
-                      구글 GCP VM에서 GPU드라이버를 설치
+                      Pytorch에서 제공하는 Dataset과 DataLoader 이해하기
                     </p>
               
                     <div class="article__meta">
@@ -409,7 +343,7 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
                       </div>
                       <div class="article-info">
                         <div class="article__author-name">Kim WooHyeon</div>
-                        <span class="article__date"><time datetime="2021-12-11T00:00:00+00:00">11 Dec 2021</time></span>
+                        <span class="article__date"><time datetime="2021-12-26T00:00:00+00:00">26 Dec 2021</time></span>
                       </div>
                     </div>
               
@@ -420,6 +354,27 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
             
                 
               
+            
+            
+            
+      
+            
+      
+            
+            
+            
+            
+      
+            
+      
+            
+            
+            
+            
+      
+            
+      
+            
             
           </div>
         </div>

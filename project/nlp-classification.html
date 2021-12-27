@@ -237,6 +237,124 @@
 
 <p>엑셀에 데이터를 저장하기 위해 데이터의 길이를 13,000으로 제한한다. 엑셀에서 한 셀에 넣을 수 있는 글자수가 32,767자이기 때문에 13,000자까지 크롤링한 후 토크나이징 및 청원 제목과 병합하여 32,767자를 초과하지 않도록 하기 위함이다.</p>
 
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 데이터 저장
+</span><span class="n">result</span><span class="p">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">"petitions.csv"</span> <span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+<h2 id="3-전처리">3. 전처리</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"petitions.csv"</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">result</span>
+
+<span class="k">def</span> <span class="nf">remove_white_space</span><span class="p">(</span><span class="n">text</span><span class="p">):</span> <span class="c1"># 공백문자를 제거하는 함수를 정의  \t =&gt; tap, \r\n =&gt; 엔터, \n =&gt; 줄바꿈, \f =&gt; 새 페이지, \v =&gt; 수직 탭
+</span>    
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s">'[\t\r\n\f\v]'</span><span class="p">,</span> <span class="s">''</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">text</span>
+
+<span class="k">def</span> <span class="nf">remove_special_char</span><span class="p">(</span><span class="n">text</span><span class="p">):</span> <span class="c1"># ㄱ-ㅣ(자음 ㄱ-ㅎ, ㅏ~ㅣ) 가-힣, 0-9에 해당하지 않는 문자가 등장하면 공백으로 치환, 영어가 등장해도 공백으로 교체
+</span>    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="n">sub</span><span class="p">(</span><span class="s">'[^ ㄱ-ㅣ|가-힣 0-9]+'</span><span class="p">,</span> <span class="s">''</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">text</span>
+
+<span class="n">df</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">title</span><span class="p">.</span><span class="nb">apply</span><span class="p">(</span><span class="n">remove_white_space</span><span class="p">)</span>
+<span class="n">df</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">title</span><span class="p">.</span><span class="nb">apply</span><span class="p">(</span><span class="n">remove_special_char</span><span class="p">)</span>
+
+<span class="n">df</span><span class="p">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">content</span><span class="p">.</span><span class="nb">apply</span><span class="p">(</span><span class="n">remove_white_space</span><span class="p">)</span>
+<span class="n">df</span><span class="p">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">content</span><span class="p">.</span><span class="nb">apply</span><span class="p">(</span><span class="n">remove_special_char</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="31-토크나이징-및-변수-생성">3.1 토크나이징 및 변수 생성</h3>
+
+<p>토크나이징이란 문장을 의미 있는 부분으로 나누는 과정을 말하며, 그 나누어진 부분을 토큰(Token)이라고 부른다. 간단하게 <strong>형태소</strong>로 이해할 수 있다. 예를 들어, <span style="color: #288ba8;">“나는 치킨을 먹는다”</span> 라는 문장을 형태소 단위로 토크나이징하면 <span style="color:#288ba8">[“나”, “는”, “치킨”, “을”, “먹”, “는”, “다”]</span> 라는 7개의 토큰을 얻을 수 있다. 
+분석에 필요한 모든 문장을 토크나이징 해주어야 하는데 그 이유는 컴퓨터는 다른 형태의 단어는 다른 단어라고 인식하기 때문이다. 예를 들어, <span style="color: #288ba8">“먹습니다”, “먹다”, “먹어요”, “먹네요”, “먹었다”</span>는 모두 “먹다”의 의미지만 컴퓨터는 당연하게도 모두 다른 단어라고 인식한다. 이 것을 해결하기 위해 모든 단어를 형태소로 분할한다.
+“먹습니다” -&gt; [“먹”, “습니다”]
+“먹” -&gt; [“먹”, “다”] 등과 같이 전부 나누게 되면 <span style="color: #288ba8">“먹”</span> 의미를 가진 최소 단위인 “먹”이 추출되고, 컴퓨터는 이 토큰을 근거로 위 문장들이 <span style="color:crimson;">모두 유사한 의미</span>를 지녔다고 판단한다.</p>
+
+<p>우리는 청원 제목과 청원 내용을 토크나이징해야 한다. 청원 제목은 형태소 단위로, 청원 내용은 명사 단위로 문장을 나눈다. 청원 내용에서는 명사만 추출하여 학습하는데, 그 이유는 학습효율과 키워드 중심의 분석을 하기 위함이다. 청원 내용은 글이 길어 형태소 단위로 토크나이징해 학습하기에는 비교적 많은 시관과 자원이 요구된다. 따라서 명사만 추출하여 키워드 중심의 학습을 진행한다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">konlpy.tag</span> <span class="kn">import</span> <span class="n">Okt</span>
+</code></pre></div></div>
+
+<p>konlpy에서 Okt를 임포트하기 위해서는 2가지가 필요하다.</p>
+<ol>
+  <li>Java가 설치되어 있어야 하며</li>
+  <li>tweepy가 &lt; 4.0.0 이어야 한다.</li>
+</ol>
+
+<p>따라서 <code class="language-plaintext highlighter-rouge">AttributeError: module 'tweepy' has no attribute 'StreamListener'</code> Error가 나타나면</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span><span class="nv">tweepy</span><span class="o">==</span>3.10.0
+</code></pre></div></div>
+<p>로 tweepy버전을 낮추자.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">okt</span> <span class="o">=</span> <span class="n">Okt</span><span class="p">()</span>
+<span class="n">df</span><span class="p">[</span><span class="s">"title_token"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">title</span><span class="p">.</span><span class="nb">apply</span><span class="p">(</span><span class="n">okt</span><span class="p">.</span><span class="n">morphs</span><span class="p">)</span>  <span class="c1"># 청원 제목을 형태소 단위로 토크나이징 하여 title_totken에 저장
+</span><span class="n">df</span><span class="p">[</span><span class="s">"content_token"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">content</span><span class="p">.</span><span class="nb">apply</span><span class="p">(</span><span class="n">okt</span><span class="p">.</span><span class="n">nouns</span><span class="p">)</span> <span class="c1"># 청원 내용을 명사(Nouns)단위로 토크나이징하여 저장
+</span>
+
+<span class="c1"># 파생변수 생성
+</span><span class="n">df</span><span class="p">[</span><span class="s">"token_final"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">title_token</span> <span class="o">+</span> <span class="n">df</span><span class="p">.</span><span class="n">content_token</span>
+<span class="n">df</span><span class="p">[</span><span class="s">"count"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s">"count"</span><span class="p">].</span><span class="n">replace</span><span class="p">({</span><span class="s">","</span> <span class="p">:</span> <span class="s">""</span><span class="p">},</span> <span class="n">regex</span><span class="o">=</span><span class="bp">True</span><span class="p">).</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="c1"># 참여인원은 천 단위마다","가 있어 object형태로 인식함 참여인원에 ","를 제거하고 int형으로 변환
+</span>
+<span class="c1"># 분석에 필요한 toekn_final과 label만 추출하여 df_drop에 저장
+</span><span class="n">df</span><span class="p">[</span><span class="s">"label"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s">"count"</span><span class="p">].</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s">"yes"</span> <span class="k">if</span> <span class="n">x</span><span class="o">&gt;</span><span class="mi">1000</span> <span class="k">else</span> <span class="s">"No"</span><span class="p">)</span>
+
+<span class="n">df_drop</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s">"token_final"</span><span class="p">,</span> <span class="s">"label"</span><span class="p">]]</span>
+</code></pre></div></div>
+
+<h2 id="4-단어-임베딩">4. 단어 임베딩</h2>
+
+<p>최종적으로 사용할 데이터는 국민청원의 전처리 결과인 “token_final”과 참여인원 1,000명 이상 여부를 나타내는 ‘label’이다.
+딥러닝 모델은 Input으로 숫자데이터를 입력해주어야 한다. 따라서 딥러닝 모델을 학습시키기 위해서는 이러한 문자데이티러르 숫자로 변환하여 컴퓨터가 이해할 수 있도록 해야 한다. 이러한 과정을 <span style="color:crimson">단어 임베딩(word embedding)</span>이라고 한다. 다양한 임베딩 방법이 있지만 널리 사용하는 <span style="color:crimson"><b>Word2Vec</b></span>을 사용하겠다.</p>
+
+<h3 id="41-word2vec을-들어가기-전에">4.1 Word2Vec을 들어가기 전에</h3>
+<ul>
+  <li>Text1. [‘음주운전’, ‘사고’, ‘가해자’, ‘강력’, ‘처벌’] -&gt; [0, 1, 2, 3, 4]</li>
+  <li>Text2. [‘음주운전’, ‘역주행’, ‘사건’, ‘집행유예’, ‘처벌’] -&gt; [0,5, 6, 7, 4]</li>
+  <li>Text3. [‘음주운전’, ‘사고’, ‘면허’, ‘취소’, ‘규정’] -&gt; [0, 1, 8, 9, 10]</li>
+</ul>
+
+<p>위 인덱스는 임의로 토큰이 등장하는 순서대로 숫자를 부여했다. 음주운전 0, 사고는 1의 값을 갖는다. 하지만 이 방법은 단순히 토큰에 숫자로 치환한 것 그 이상의 의미는 갖지 못한다.</p>
+
+<blockquote>
+  <p><strong>Word2VEC</strong></p>
+</blockquote>
+
+<p><strong>Word2Vec</strong>은 단어의 의미와 유사도를 반영하여 단어를 벡터로 표현하는 방식이다. 예를 들어 <em>“왕-남자 = 여왕”</em>을 벡터로 표현하여 연산하는 것이다. Word2Vec을 관통하는 핵심은 <strong><em>‘토큰의 의미는 주변 토큰의 정보로 표현된다고’</em></strong> 가정한다. 즉 특정 토큰 근처에 있는 토큰들은 비슷한 위치의 벡터로 표현된다는 것이다.</p>
+
+<p><strong><em>One-Hot Encoding Vecotr</em></strong> 에 가중치 행렬을 곱하여 <strong><em>Word Embding Vector</em></strong> 를 생성할 수 있다. 가중치 행렬의 차원(Dimension)은 사용자가 지정해주어야 하는 값으로, 이 프로젝트에서는 <strong><em>100차원</em></strong>을 지정한다. 가중치 행렬을 학습하는 과정으로 <strong><em>CBOW</em></strong>와 <strong><em>Skip-Gram</em></strong>이 있으며 두 가지 방법 모두 문장을 <strong><em>윈도우 형태</em></strong>로 일부분만 보는 것을 기본으로 합니다. 중심 토큰의 양옆 토큰을 포함한 윈도우가 이동하면서 중심 토큰과 주변 토큰의 관계를 학습한다. CBOW의 목적은 윈도우 크기만 큼 앞뒤 주변 토큰을 벡터로 변환해 더한 후 중앙토큰을 맞추는 것이고, 반대로 Skip-gram의 목적은 중심 토큰을 벡터로 변환한 후 윈도우 크기만큼 주변 토큰을 맞추는 것이다. 일반적으로 Skip-gram의 성능이 더 좋다고 알려져있다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">gensim.models</span> <span class="kn">import</span> <span class="n">Word2Vec</span> <span class="c1"># Word2Vec, Doc2Vec, FastText, LDA Model 등과 같이 자연어 처리에 사용되는 모델을 지원하는데 그중 Word2Vec을 사용한다.
+</span>
+<span class="n">embedding_model</span> <span class="o">=</span> <span class="n">Word2Vec</span><span class="p">(</span><span class="n">df_drop</span><span class="p">[</span><span class="s">"token_final"</span><span class="p">],</span> <span class="c1"># 임베딩 벡터를 생성할 대상이 되는 데이터
+</span>                           <span class="n">sg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="c1"># Word2Vec의 모델 구조 옵션을 지정(1: Skip-Gram, 0:Cbow)
+</span>                           <span class="n">vector_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="c1"># 임베딩 벡터의 크기(Dimension)을 지정
+</span>                           <span class="n">window</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="c1"># 임베딩 벡터 생성 시 문맥 파악을 위해 고려해야 할 앞, 뒤 토큰 수를 지정
+</span>                           <span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="c1"># 전체 토큰에서 일정횟수 이상 등장하지 않는 토큰은 임베딩 벡터엣서 제외
+</span>                           <span class="n">workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="c1"># 실행할 병령 프로세서의 수
+</span>
+<span class="k">print</span><span class="p">(</span><span class="n">embedding_model</span><span class="p">)</span>
+
+<span class="n">model_result</span> <span class="o">=</span> <span class="n">embedding_model</span><span class="p">.</span><span class="n">wv</span><span class="p">.</span><span class="n">most_similar</span><span class="p">(</span><span class="s">"음주운전"</span><span class="p">)</span> <span class="c1"># 9
+</span><span class="k">print</span><span class="p">(</span><span class="n">model_result</span><span class="p">)</span>
+
+
+<span class="c1">##### 임베딩 모델 저장 및 로드
+</span><span class="kn">from</span> <span class="nn">gensim.models</span> <span class="kn">import</span> <span class="n">KeyedVectors</span> <span class="c1"># 임베딩 모델을 불러오기 위한 클래스르 불러옴
+</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">isdir</span><span class="p">(</span><span class="s">"data"</span><span class="p">):</span>
+    <span class="n">os</span><span class="p">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s">"data"</span><span class="p">)</span>
+
+<span class="n">embedding_model</span><span class="p">.</span><span class="n">wv</span><span class="p">.</span><span class="n">save_word2vec_format</span><span class="p">(</span><span class="s">"data/petitions_tokens_w2v"</span><span class="p">)</span> <span class="c1"># 임베딩 모델을 저장
+</span>
+<span class="n">loaded_model</span> <span class="o">=</span> <span class="n">KeyedVectors</span><span class="p">.</span><span class="n">load_word2vec_format</span><span class="p">(</span><span class="s">"data/petitions_tokens_w2v"</span><span class="p">)</span> <span class="c1"># 폴더에 저장되어 있는 임베딩 모델을 불러와 "loaded_model"에 저장
+</span>
+<span class="n">model_result</span> <span class="o">=</span> <span class="n">loaded_model</span><span class="p">.</span><span class="n">most_similar</span><span class="p">(</span><span class="s">"음주운전"</span><span class="p">)</span> <span class="c1"># 임베딩 모델이 이상 없이 로드되었는지 확인하기 위해 "음주운전" 유사한 단어와 벡터값이 이전 결과와 같은지 확인
+</span><span class="k">print</span><span class="p">(</span><span class="n">model_result</span><span class="p">)</span>
+</code></pre></div></div>
+
 
   </div>
 
