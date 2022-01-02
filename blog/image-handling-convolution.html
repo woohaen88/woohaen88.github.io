@@ -6,21 +6,21 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>GCP VM에 Google Cloud Storage Mount</title>
-  <meta name='description' content='GCP VM에 Google Cloud Storage Mount하기'>
+  <title>이미지 처리와 합성곱 신경망</title>
+  <meta name='description' content='작성'>
 
-  <link rel="canonical" href="/blog/mount-google-storage-into-gcp-vm">
+  <link rel="canonical" href="/blog/image-handling-convolution">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="GCP VM에 Google Cloud Storage Mount – woohyeon">
-  <meta name="twitter:description" content="GCP VM에 Google Cloud Storage Mount하기">
-  <meta name="twitter:image:src" content="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png">
+  <meta name="twitter:title" content="이미지 처리와 합성곱 신경망 – woohyeon">
+  <meta name="twitter:description" content="작성">
+  <meta name="twitter:image:src" content="/images/posts/04_image_handling/thumbnail.png">
 
   <!-- Facebook OpenGraph -->
-  <meta property="og:title" content="GCP VM에 Google Cloud Storage Mount – woohyeon">
-  <meta property="og:description" content="GCP VM에 Google Cloud Storage Mount하기">
-  <meta property="og:image" content="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png">
+  <meta property="og:title" content="이미지 처리와 합성곱 신경망 – woohyeon">
+  <meta property="og:description" content="작성">
+  <meta property="og:image" content="/images/posts/04_image_handling/thumbnail.png">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -142,7 +142,7 @@
       
 
         <div class="align_c">
-          <img loading="lazy" src="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png" alt="GCP VM에 Google Cloud Storage Mount" />
+          <img loading="lazy" src="/images/posts/04_image_handling/thumbnail.png" alt="이미지 처리와 합성곱 신경망" />
         </div>
 
       
@@ -153,15 +153,15 @@
           
           <div class="post-tags">
             
-              <a href="/tag/gcp" class="post-tags__tag">gcp</a>
+              <a href="/tag/pytorch" class="post-tags__tag">pytorch</a>
             
-              <a href="/tag/google cloud storage" class="post-tags__tag">google cloud storage</a>
+              <a href="/tag/module" class="post-tags__tag">Module</a>
             
           </div>
           
 
 
-          <h1 class="post__title">GCP VM에 Google Cloud Storage Mount</h1>
+          <h1 class="post__title">이미지 처리와 합성곱 신경망</h1>
 
           <div class="post__meta">
             <div class="post__author-image">
@@ -170,7 +170,7 @@
 
             <div class="post__meta-bottom">
               <div class="post__author">Kim WooHyeon</div>
-              <time class="post__date" datetime="2021-12-11T00:00:00+00:00">11 Dec 2021</time>
+              <time class="post__date" datetime="2021-12-29T00:00:00+00:00">29 Dec 2021</time>
             </div>
           </div>
 
@@ -186,62 +186,32 @@
   <article class="post">
 
     <div class="post__content" data-cms-content-wrapper="/site/_layouts/post.html">
-      <!-- 포스트 이미지 폴더: /images/mount-google-storage-into-gcp-vm/ -->
-<h1>Google Compute Engine 에 Cloud Storage 마운트하기</h1>
+      <!-- 포스트 이미지 폴더: /images/posts/02_dataset_and_dataloader/ -->
+<h1>이미지 처리와 합성곱 신경망</h1>
 
-<ol>
-  <li>Cloud Storage bucket</li>
-  <li>Cloud Engine</li>
-  <li>gcsfuse</li>
-</ol>
+<p>2012년에 ILSVRC라는 이미지 인식 대회에서 다층 CNN을 사용한 모델이 다른 모델들을 압도하면서 딥러닝이 주목받게 된 기폭제가 됐다. 현재도 딥러닝이 가장 활발히 사용되는 분야가 컴퓨터 비전 분야로 특히, CNN이 활발히 연구되고 있다.</p>
 
-<h2>1. Compute Engine 만들기</h2>
-<p>Cloude Storage Bucket을 마운트하기 위해서는 gcsfuse가 필요하다.</p>
+<h2 id="1-이미지와-합성곱-계산">1. 이미지와 합성곱 계산</h2>
 
-<blockquote>
-  <em>Cloud Storage FUSE는 Cloud Storage 버킷을 Linux 또는 macOS 시스템에 파일 시스템으로 마운트할 수 있는 오픈소스 FUSE 어댑터입니다. Google Compute Engine VM 또는 온프레미스 시스템1을 포함하여 Cloud Storage와 연결된 모든 위치에서 Cloud Storage FUSE를 실행할 수 있습니다.
-  <a href="https://cloud.google.com/storage/docs/gcs-fuse#using_feat_name">https://cloud.google.com/storage/docs/gcs-fuse#using_feat_name</a>  
-  </em>
-</blockquote>
+<p>이미지 분야에서 합성곱(Convolution)이란, 이미지 위에 작은 커널(필터)을 이동시켜 가면서 각 요소(픽셀)의 곱(또는 합이나 평균 등)을 계산해 가는 방식이다.</p>
 
-<p>먼저 Google Cloud VM에 접속한다.</p>
+<h2 id="2-cnn을-사용한-이미지-분류">2. CNN을 사용한 이미지 분류</h2>
 
-<ol>
-  <li>gcsfuse 배포 URL을 패키지 소스로 추가하고 공개 키를 가져온다.
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">GCSFUSE_REPO</span><span class="o">=</span>gcsfuse-<span class="sb">`</span>lsb_release <span class="nt">-c</span> <span class="nt">-s</span><span class="sb">`</span>
-<span class="nb">echo</span> <span class="s2">"deb http://packages.cloud.google.com/apt </span><span class="nv">$GCSFUSE_REPO</span><span class="s2"> main"</span> | <span class="nb">sudo tee</span> /etc/apt/sources.list.d/gcsfuse.list
-curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | <span class="nb">sudo </span>apt-key add -
-</code></pre></div>    </div>
-  </li>
-  <li>사용 가능한 패키지 목록을 업데이트 하고 gcsfuse를 설치한다.
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get update
-<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>gcsfuse
-</code></pre></div>    </div>
-  </li>
-  <li>gcsfuse에 대한 향후 업데이트는 다음과 같은 일반적인 방법으로 설치할 수 있다.
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get update <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt-get <span class="nt">-y</span> upgrade
-</code></pre></div>    </div>
-  </li>
-</ol>
+<p>CNN을 사용한 이미지 분류는 기본적으로 합성곱으로부터 ReLU 등의 활성화 함수를 적용하는 과정을 여러 번 실시한다. 이미지 데이터는 (C, H, W) 형식으로 H, W는 이미지의 세로, 가로 크기이며, C는 색수 또는 채널(channel)이라고도 불린다. 원래 C=1이나 C=3이지만, 최종적으로는 <span style="color:crimson;">마지막 합성공 계층의 커널 수</span>가 된다. 합성곱 처리 후에는 위치 감도를 높이는 풀링(pooling)을 적용하거나, Dropout, Batch Normalization을 함께 사용하는 경우도 많다.</p>
 
-<hr />
+<h3 id="21-fashion-mnist">2.1 Fashion-Mnist</h3>
 
-<h2>2. 버킷 마운트하기</h2>
-<h3>사전준비</h3>
-<p>처음에 google-cloud와 로그인 인증을 해준다.</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud auth login
-</code></pre></div></div>
-<p>크롬 브라우저에서 로그인 설정을 해준다. 이게 완료되어야 다음단계로 진행된다.</p>
-<h3>버킷마운트</h3>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> /path/to/mount/point
-gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_cloud_bucket<span class="o">}</span> /path/to/mount/point
-</code></pre></div></div>
+<p>MNIST는 28X28픽셀의 흑백 손글씨 숫자 데이터이다. 이 데이터는 이미지 분류 시에 사용되는 머신러닝을 입문한다면 제일 처음에 만나게되는 대표적인 예제 데이터이다. 최근에는 이 MNIST가 너무 간단하다는 지적도 있어서 10가지 분류의 옷 및 엑세서리를 이미지 데이터로 이루어진 <span style="color:darkblue;"><b>Fashion-MNIST</b></span></p>
 
-<p>gcsfuse 를 이용하면 google cloud storage 를 파일시스템으로 mount를 시킬 수 있다. 이 때 중요한 것은 –implicit-dirs 옵션을 붙여주여야 디렉토리 구조가 보인다는 것이다.</p>
+<figure>
+<img src="/images/posts/04_image_handling/fashion_mnist.png" />
+	<span style="font-size: 0.8em; color:gray;"><figcaption align="center">
+		Figure 1: Fashion_MNIST
+	</figcaption></span>
+</figure>
 
-<p>언마운트는 다음과 같이 진행한다.</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fusermount <span class="nt">-u</span> /path/to/mount/point
-</code></pre></div></div>
+<p>파이토치의 확장 기능인 torchvision이라는 라이브러리를 사용하면 Fashion-MNIST 데이터 다운로드부터, Dataset으로 변환, DataLoader 작성까지 할 수 있다.</p>
+
 
     </div>
 
@@ -252,25 +222,25 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
   <ul class="share__list list-reset">
     <li class="share__item">
       <a class="share__link share__twitter"
-        href="https://twitter.com/intent/tweet?text=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount&url=/blog/mount-google-storage-into-gcp-vm"
+        href="https://twitter.com/intent/tweet?text=%EC%9D%B4%EB%AF%B8%EC%A7%80%20%EC%B2%98%EB%A6%AC%EC%99%80%20%ED%95%A9%EC%84%B1%EA%B3%B1%20%EC%8B%A0%EA%B2%BD%EB%A7%9D&url=/blog/image-handling-convolution"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__facebook"
-        href="https://www.facebook.com/sharer/sharer.php?u=/blog/mount-google-storage-into-gcp-vm"
+        href="https://www.facebook.com/sharer/sharer.php?u=/blog/image-handling-convolution"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__pinterest"
-        href="http://pinterest.com/pin/create/button/?url=/blog/mount-google-storage-into-gcp-vm&amp;media=/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png&amp;description=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount"
+        href="http://pinterest.com/pin/create/button/?url=/blog/image-handling-convolution&amp;media=/images/posts/04_image_handling/thumbnail.png&amp;description=%EC%9D%B4%EB%AF%B8%EC%A7%80%20%EC%B2%98%EB%A6%AC%EC%99%80%20%ED%95%A9%EC%84%B1%EA%B3%B1%20%EC%8B%A0%EA%B2%BD%EB%A7%9D"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__linkedin"
-        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/mount-google-storage-into-gcp-vm&title=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount&summary=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount%ED%95%98%EA%B8%B0&source=Woohyeon"
+        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/image-handling-convolution&title=%EC%9D%B4%EB%AF%B8%EC%A7%80%20%EC%B2%98%EB%A6%AC%EC%99%80%20%ED%95%A9%EC%84%B1%EA%B3%B1%20%EC%8B%A0%EA%B2%BD%EB%A7%9D&summary=%EC%9E%91%EC%84%B1&source=Woohyeon"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on LinkedIn" rel="nofollow"><i class="ion ion-logo-linkedin"></i></a>
     </li>
@@ -286,25 +256,25 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
     <div class="col col-10 col-d-12 push-d-0 push-1">
       <div class="post__navigation animate">
   
-  <a class="post__prev" href="/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98">
+  <a class="post__prev" href="/blog/modulization-from-nn">
     <div class="prev__image">
-      <img loading="lazy" src="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png" alt="GCP VM에 Google Cloud Storage Mount">
+      <img loading="lazy" src="/images/posts/03_modulization/thumbnail.png" alt="이미지 처리와 합성곱 신경망">
     </div>
     <div class="prev__box">
       <span class="post__nav post__nav__prev">Prev post</span>
-      <h2 class="post__nav__title">GCP google instance에 GPU Driver 설치</h2>
+      <h2 class="post__nav__title">신경망의 모듈화</h2>
     </div>
   </a>
   
 
   
-  <a class="post__next" href="/blog/linear-regression">
+  <a class="post__next" href="/blog/intro-to-pytorch">
     <div class="next__box">
       <span class="post__nav post__nav__next">Next post</span>
-      <h2 class="post__nav__title">Linear Regression(Basic)</h2>
+      <h2 class="post__nav__title">Intro to PyTorch-Training your first neural network using PyTorch</h2>
     </div>
     <div class="next__image">
-      <img loading="lazy" src="/images/posts/Linear_regression/thumbnail.png" alt="GCP VM에 Google Cloud Storage Mount">
+      <img loading="lazy" src="/images/posts/03_modulization/thumbnail.png" alt="이미지 처리와 합성곱 신경망">
     </div>
   </a>
   
@@ -332,7 +302,7 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
                 
                 
                   
-                    <a href="/tags#gcp" class="section__link related-tag">See all<span> gcp</span> <i class="ion ion-md-arrow-forward"></i></a>
+                    <a href="/tags#pytorch" class="section__link related-tag">See all<span> pytorch</span> <i class="ion ion-md-arrow-forward"></i></a>
                   
                 
                   
@@ -350,6 +320,55 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
             
       
             
+
+              <div class="article col col-4 col-d-6 col-t-12">
+                <div class="article__inner">
+              
+                  
+                  <div class="image-wrap">
+                    <a class="article__image" href="/blog/cnn-pytorch">
+                      <img loading="lazy" src="/images/posts/06_cnn_pytorch/thumbnail.png" alt="PyTorch-Training first Convolutional Neural Network (CNN)">
+                    </a>
+                  </div>
+                  
+              
+                  <div class="article__content">
+              
+                    
+                    <div class="article-tags__box">
+                      
+                      <a href="/tag/pytorch" class="article__tag">pytorch</a>
+                      
+                      <a href="/tag/module" class="article__tag">Module</a>
+                      
+                    </div>
+                    
+              
+                    <h2 class="article__title">
+                      <a href="/blog/cnn-pytorch">PyTorch-Training first Convolutional Neural Network (CNN)</a>
+                    </h2>
+              
+                    <p class="article__excerpt">
+                      객체 지향 프로그래밍에서 자체 신경망 계층을 만들어서 재사용하거나 더 복잡한 신경망을 만드는 방법
+                    </p>
+              
+                    <div class="article__meta">
+                      <div class="article__author-image">
+                        <img loading="lazy" src="/uploads/profile.jpeg" alt="Kim WooHyeon">
+                      </div>
+                      <div class="article-info">
+                        <div class="article__author-name">Kim WooHyeon</div>
+                        <span class="article__date"><time datetime="2022-01-01T00:02:00+00:00">01 Jan 2022</time></span>
+                      </div>
+                    </div>
+              
+                  </div>
+                </div>
+              </div>
+
+            
+                
+              
             
             
             
@@ -357,34 +376,55 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
             
       
             
+
+              <div class="article col col-4 col-d-6 col-t-12">
+                <div class="article__inner">
+              
+                  
+                  <div class="image-wrap">
+                    <a class="article__image" href="/blog/intro-to-pytorch">
+                      <img loading="lazy" src="/images/posts/03_modulization/thumbnail.png" alt="Intro to PyTorch-Training your first neural network using PyTorch">
+                    </a>
+                  </div>
+                  
+              
+                  <div class="article__content">
+              
+                    
+                    <div class="article-tags__box">
+                      
+                      <a href="/tag/pytorch" class="article__tag">pytorch</a>
+                      
+                      <a href="/tag/module" class="article__tag">Module</a>
+                      
+                    </div>
+                    
+              
+                    <h2 class="article__title">
+                      <a href="/blog/intro-to-pytorch">Intro to PyTorch-Training your first neural network using PyTorch</a>
+                    </h2>
+              
+                    <p class="article__excerpt">
+                      객체 지향 프로그래밍에서 자체 신경망 계층을 만들어서 재사용하거나 더 복잡한 신경망을 만드는 방법
+                    </p>
+              
+                    <div class="article__meta">
+                      <div class="article__author-image">
+                        <img loading="lazy" src="/uploads/profile.jpeg" alt="Kim WooHyeon">
+                      </div>
+                      <div class="article-info">
+                        <div class="article__author-name">Kim WooHyeon</div>
+                        <span class="article__date"><time datetime="2021-12-31T00:00:00+00:00">31 Dec 2021</time></span>
+                      </div>
+                    </div>
+              
+                  </div>
+                </div>
+              </div>
+
             
-            
-            
-      
-            
-      
-            
-            
-            
-            
-      
-            
-      
-            
-            
-            
-            
-      
-            
-      
-            
-            
-            
-            
-      
-            
-      
-            
+                
+              
             
             
             
@@ -405,8 +445,8 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
               
                   
                   <div class="image-wrap">
-                    <a class="article__image" href="/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98">
-                      <img loading="lazy" src="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png" alt="GCP google instance에 GPU Driver 설치">
+                    <a class="article__image" href="/blog/modulization-from-nn">
+                      <img loading="lazy" src="/images/posts/03_modulization/thumbnail.png" alt="신경망의 모듈화">
                     </a>
                   </div>
                   
@@ -416,19 +456,19 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
                     
                     <div class="article-tags__box">
                       
-                      <a href="/tag/gcp" class="article__tag">gcp</a>
+                      <a href="/tag/pytorch" class="article__tag">pytorch</a>
                       
-                      <a href="/tag/gpu monitoring" class="article__tag">GPU monitoring</a>
+                      <a href="/tag/module" class="article__tag">Module</a>
                       
                     </div>
                     
               
                     <h2 class="article__title">
-                      <a href="/blog/gcp-google-instance%EC%97%90-gpu-driver-%EC%84%A4%EC%B9%98">GCP google instance에 GPU Driver 설치</a>
+                      <a href="/blog/modulization-from-nn">신경망의 모듈화</a>
                     </h2>
               
                     <p class="article__excerpt">
-                      구글 GCP VM에서 GPU드라이버를 설치
+                      객체 지향 프로그래밍에서 자체 신경망 계층을 만들어서 재사용하거나 더 복잡한 신경망을 만드는 방법
                     </p>
               
                     <div class="article__meta">
@@ -437,7 +477,7 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
                       </div>
                       <div class="article-info">
                         <div class="article__author-name">Kim WooHyeon</div>
-                        <span class="article__date"><time datetime="2021-12-11T00:00:00+00:00">11 Dec 2021</time></span>
+                        <span class="article__date"><time datetime="2021-12-28T00:00:00+00:00">28 Dec 2021</time></span>
                       </div>
                     </div>
               
@@ -447,8 +487,7 @@ gcsfuse <span class="nt">--implicit-dirs</span> <span class="o">{</span>google_c
 
             
                 
-              
-            
+                  
           </div>
         </div>
       </div>

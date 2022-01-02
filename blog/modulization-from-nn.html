@@ -6,21 +6,21 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Linear Regression(Basic)</title>
-  <meta name='description' content='GCP VM에 Google Cloud Storage Mount하기'>
+  <title>신경망의 모듈화</title>
+  <meta name='description' content='객체 지향 프로그래밍에서 자체 신경망 계층을 만들어서 재사용하거나 더 복잡한 신경망을 만드는 방법'>
 
-  <link rel="canonical" href="/blog/linear-regression">
+  <link rel="canonical" href="/blog/modulization-from-nn">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Linear Regression(Basic) – woohyeon">
-  <meta name="twitter:description" content="GCP VM에 Google Cloud Storage Mount하기">
-  <meta name="twitter:image:src" content="/images/posts/Linear_regression/thumbnail.png">
+  <meta name="twitter:title" content="신경망의 모듈화 – woohyeon">
+  <meta name="twitter:description" content="객체 지향 프로그래밍에서 자체 신경망 계층을 만들어서 재사용하거나 더 복잡한 신경망을 만드는 방법">
+  <meta name="twitter:image:src" content="/images/posts/03_modulization/thumbnail.png">
 
   <!-- Facebook OpenGraph -->
-  <meta property="og:title" content="Linear Regression(Basic) – woohyeon">
-  <meta property="og:description" content="GCP VM에 Google Cloud Storage Mount하기">
-  <meta property="og:image" content="/images/posts/Linear_regression/thumbnail.png">
+  <meta property="og:title" content="신경망의 모듈화 – woohyeon">
+  <meta property="og:description" content="객체 지향 프로그래밍에서 자체 신경망 계층을 만들어서 재사용하거나 더 복잡한 신경망을 만드는 방법">
+  <meta property="og:image" content="/images/posts/03_modulization/thumbnail.png">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -142,7 +142,7 @@
       
 
         <div class="align_c">
-          <img loading="lazy" src="/images/posts/Linear_regression/thumbnail.png" alt="Linear Regression(Basic)" />
+          <img loading="lazy" src="/images/posts/03_modulization/thumbnail.png" alt="신경망의 모듈화" />
         </div>
 
       
@@ -155,11 +155,13 @@
             
               <a href="/tag/pytorch" class="post-tags__tag">pytorch</a>
             
+              <a href="/tag/module" class="post-tags__tag">Module</a>
+            
           </div>
           
 
 
-          <h1 class="post__title">Linear Regression(Basic)</h1>
+          <h1 class="post__title">신경망의 모듈화</h1>
 
           <div class="post__meta">
             <div class="post__author-image">
@@ -168,7 +170,7 @@
 
             <div class="post__meta-bottom">
               <div class="post__author">Kim WooHyeon</div>
-              <time class="post__date" datetime="2021-12-21T00:00:00+00:00">21 Dec 2021</time>
+              <time class="post__date" datetime="2021-12-28T00:00:00+00:00">28 Dec 2021</time>
             </div>
           </div>
 
@@ -184,15 +186,57 @@
   <article class="post">
 
     <div class="post__content" data-cms-content-wrapper="/site/_layouts/post.html">
-      <!-- 포스트 이미지 폴더: /images/mount-google-storage-into-gcp-vm/ -->
-<h1>Linear Regression(Basic)</h1>
+      <!-- 포스트 이미지 폴더: /images/posts/02_dataset_and_dataloader/ -->
+<h1>1. 커스텀 계층 만들기</h1>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<p>파이토치에서 자체 신경망을 만들려면 <code class="language-plaintext highlighter-rouge">nn.Module</code>을 상속해서 클래스를 정의한다. nn.Module을 상속하게 되면 forward 메서드를 구현하면 자동 미분까지 가능해진다.</p>
+
+<blockquote>
+  <p>이미 특정 Variable형의 x를 net(x) 형식으로 사용했다. nn.Module의 <code class="language-plaintext highlighter-rouge">__call__</code> 메서드는 내부에서 forward 메서드를 사용하고 있으므로 <code class="language-plaintext highlighter-rouge">net(x)</code> 형식이 가능하다.</p>
+</blockquote>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+
+
+<span class="c1"># 방법 1
+</span><span class="k">class</span> <span class="nc">CustoemLinear</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CustoemLinear</span><span class="p">).</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">bias</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">ReLU</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">drop</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">drop</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+<span class="n">mlp</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">CustoemLinear</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span>
+    <span class="n">CustoemLinear</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span>
+    <span class="n">CustoemLinear</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span>
+    <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># 방법2
+</span><span class="k">class</span> <span class="nc">MLP</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MLP</span><span class="p">,</span> <span class="bp">self</span><span class="p">).</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">ln1</span> <span class="o">=</span> <span class="n">CustoemLinear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">ln2</span> <span class="o">=</span> <span class="n">CustoemLinear</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">ln3</span> <span class="o">=</span> <span class="n">CustoemLinear</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">ln4</span> <span class="o">=</span> <span class="n">CustoemLinear</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">out_features</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">ln1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">ln2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">ln3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">ln4</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+<span class="n">mlp</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 </code></pre></div></div>
-
-<figure style="text-align:center;"><img width="2940" height="512" src="/images/posts/Linear_regression/loss_and_epoch.png" />
-  <figcaption style="font-size: 0.8rem; margin-top: 1rem;">Figure 1. epoch에 따른 loss의 변화)</figcaption>
-</figure>
 
     </div>
 
@@ -203,25 +247,25 @@
   <ul class="share__list list-reset">
     <li class="share__item">
       <a class="share__link share__twitter"
-        href="https://twitter.com/intent/tweet?text=Linear%20Regression(Basic)&url=/blog/linear-regression"
+        href="https://twitter.com/intent/tweet?text=%EC%8B%A0%EA%B2%BD%EB%A7%9D%EC%9D%98%20%EB%AA%A8%EB%93%88%ED%99%94&url=/blog/modulization-from-nn"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__facebook"
-        href="https://www.facebook.com/sharer/sharer.php?u=/blog/linear-regression"
+        href="https://www.facebook.com/sharer/sharer.php?u=/blog/modulization-from-nn"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__pinterest"
-        href="http://pinterest.com/pin/create/button/?url=/blog/linear-regression&amp;media=/images/posts/Linear_regression/thumbnail.png&amp;description=Linear%20Regression(Basic)"
+        href="http://pinterest.com/pin/create/button/?url=/blog/modulization-from-nn&amp;media=/images/posts/03_modulization/thumbnail.png&amp;description=%EC%8B%A0%EA%B2%BD%EB%A7%9D%EC%9D%98%20%EB%AA%A8%EB%93%88%ED%99%94"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
     </li>
     <li class="share__item">
       <a class="share__link share__linkedin"
-        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/linear-regression&title=Linear%20Regression(Basic)&summary=GCP%20VM%EC%97%90%20Google%20Cloud%20Storage%20Mount%ED%95%98%EA%B8%B0&source=Woohyeon"
+        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/modulization-from-nn&title=%EC%8B%A0%EA%B2%BD%EB%A7%9D%EC%9D%98%20%EB%AA%A8%EB%93%88%ED%99%94&summary=%EA%B0%9D%EC%B2%B4%20%EC%A7%80%ED%96%A5%20%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D%EC%97%90%EC%84%9C%20%EC%9E%90%EC%B2%B4%20%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EA%B3%84%EC%B8%B5%EC%9D%84%20%EB%A7%8C%EB%93%A4%EC%96%B4%EC%84%9C%20%EC%9E%AC%EC%82%AC%EC%9A%A9%ED%95%98%EA%B1%B0%EB%82%98%20%EB%8D%94%20%EB%B3%B5%EC%9E%A1%ED%95%9C%20%EC%8B%A0%EA%B2%BD%EB%A7%9D%EC%9D%84%20%EB%A7%8C%EB%93%9C%EB%8A%94%20%EB%B0%A9%EB%B2%95&source=Woohyeon"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on LinkedIn" rel="nofollow"><i class="ion ion-logo-linkedin"></i></a>
     </li>
@@ -237,25 +281,25 @@
     <div class="col col-10 col-d-12 push-d-0 push-1">
       <div class="post__navigation animate">
   
-  <a class="post__prev" href="/blog/mount-google-storage-into-gcp-vm">
+  <a class="post__prev" href="/blog/dataset-and-dataloader">
     <div class="prev__image">
-      <img loading="lazy" src="/images/mount-google-storage-into-gcp-vm/google_cloud_logo.png" alt="Linear Regression(Basic)">
+      <img loading="lazy" src="/images/posts/02_dataset_and_dataloader/thumbnail.png" alt="신경망의 모듈화">
     </div>
     <div class="prev__box">
       <span class="post__nav post__nav__prev">Prev post</span>
-      <h2 class="post__nav__title">GCP VM에 Google Cloud Storage Mount</h2>
+      <h2 class="post__nav__title">Dataset과 과대적합</h2>
     </div>
   </a>
   
 
   
-  <a class="post__next" href="/blog/dataset-and-dataloader">
+  <a class="post__next" href="/blog/image-handling-convolution">
     <div class="next__box">
       <span class="post__nav post__nav__next">Next post</span>
-      <h2 class="post__nav__title">Dataset과 과대적합</h2>
+      <h2 class="post__nav__title">이미지 처리와 합성곱 신경망</h2>
     </div>
     <div class="next__image">
-      <img loading="lazy" src="/images/posts/02_dataset_and_dataloader/thumbnail.png" alt="Linear Regression(Basic)">
+      <img loading="lazy" src="/images/posts/04_image_handling/thumbnail.png" alt="신경망의 모듈화">
     </div>
   </a>
   
@@ -284,6 +328,8 @@
                 
                   
                     <a href="/tags#pytorch" class="section__link related-tag">See all<span> pytorch</span> <i class="ion ion-md-arrow-forward"></i></a>
+                  
+                
                   
                 
               
