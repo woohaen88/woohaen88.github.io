@@ -7,19 +7,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>PyTorch-Training first Convolutional Neural Network (CNN)</title>
-  <meta name='description' content='객체 지향 프로그래밍에서 자체 신경망 계층을 만들어서 재사용하거나 더 복잡한 신경망을 만드는 방법'>
+  <meta name='description' content='pytorch에서 KMNIST를 불러와서 이미지를 불러오고, opencv를 이용하여 간단한 시각화를 해본다.'>
 
   <link rel="canonical" href="/blog/cnn-pytorch">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="PyTorch-Training first Convolutional Neural Network (CNN) – woohyeon">
-  <meta name="twitter:description" content="객체 지향 프로그래밍에서 자체 신경망 계층을 만들어서 재사용하거나 더 복잡한 신경망을 만드는 방법">
+  <meta name="twitter:description" content="pytorch에서 KMNIST를 불러와서 이미지를 불러오고, opencv를 이용하여 간단한 시각화를 해본다.">
   <meta name="twitter:image:src" content="/images/posts/06_cnn_pytorch/thumbnail.png">
 
   <!-- Facebook OpenGraph -->
   <meta property="og:title" content="PyTorch-Training first Convolutional Neural Network (CNN) – woohyeon">
-  <meta property="og:description" content="객체 지향 프로그래밍에서 자체 신경망 계층을 만들어서 재사용하거나 더 복잡한 신경망을 만드는 방법">
+  <meta property="og:description" content="pytorch에서 KMNIST를 불러와서 이미지를 불러오고, opencv를 이용하여 간단한 시각화를 해본다.">
   <meta property="og:image" content="/images/posts/06_cnn_pytorch/thumbnail.png">
 
   <!-- Fonts -->
@@ -157,6 +157,8 @@
             
               <a href="/tag/module" class="post-tags__tag">Module</a>
             
+              <a href="/tag/cnn" class="post-tags__tag">CNN</a>
+            
           </div>
           
 
@@ -196,20 +198,22 @@
   <li>미분계수를 0으로 만들고, 역전파를 실행 그리고 나서 모델 파라미터를 업데이트한다.</li>
 </ol>
 
-<p>데이터셋을 쉽게 다루게 해주는 <span style="background: #d9d9d9">DataLoader</span>를 로드한다. 이 <span style="background: #d9d9d9">DataLoader</span>는 PyTorch를 사용하는데 있어서 아주 중요한 skill이다.</p>
+<p>데이터셋을 쉽게 다루게 해주는 DataLoader를 로드한다. 이 DataLoader는 PyTorch를 사용하는데 있어서 아주 중요한 skill이다.</p>
 
 <h2 id="1-training-convolutional-neural-networkcnn">1. Training Convolutional Neural Network(CNN)</h2>
 
-<p>CNN을 구성하기 위해서는 필수 라이브러리가 필요하다. 바로 <span style="background: #d9d9d9">torch</span>와 <span style="background: #d9d9d9">torchvision</span>이다. 그리고 데이터분할을 손쉽게 다루는 <span style="background: #d9d9d9">scikit-learn</span>와 이미지 그래픽을 위한 <span style="background: #d9d9d9">opencv</span>또한 설치하도록 하자.</p>
+<p>CNN을 구성하기 위해서는 필수 라이브러리가 필요하다. 바로 torch와 torchvision이다. 그리고 데이터분할을 손쉽게 다루는 scikit-learn와 이미지 그래픽을 위한 opencv또한 설치하도록 하자.</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pip <span class="nb">install </span>torch torchvision
 <span class="nv">$ </span>pip <span class="nb">install </span>opencv-contrib-python
 <span class="nv">$ </span>pip <span class="nb">install </span>scikit-learn
 <span class="nv">$ </span>pip <span class="nb">install </span>imutils
 </code></pre></div></div>
+
 <p><br /></p>
 
 <h3 id="the-kmnist-dataset">The KMNIST dataset</h3>
+
 <figure style="text-align: center">
 <img src="/images/posts/06_cnn_pytorch/kmnist_dataset.png" width="100%" />
 	<span style="font-size: 0.8em; color:gray;"><figcaption align="center">
@@ -237,15 +241,17 @@
 </code></pre></div></div>
 
 <p>가장 먼저 살펴볼 script는 다음과 같다.</p>
+
 <ol>
-  <li><span style="background: #d9d9d9">lenet.py</span> : 유명한 LeNet architecture</li>
-  <li><span style="background: #d9d9d9">train.py</span> : KMNIST를 훈련하는 script</li>
-  <li><span style="background: #d9d9d9">predict.py</span> : train model을 로드하고, 스크린에 결과를 보여준다.</li>
+  <li>lenet.py : 유명한 LeNet architecture</li>
+  <li>train.py : KMNIST를 훈련하는 script</li>
+  <li>predict.py : train model을 로드하고, 스크린에 결과를 보여준다.</li>
 </ol>
 
 <p><code class="language-plaintext highlighter-rouge">output</code> 디렉터리에는 <code class="language-plaintext highlighter-rouge">plot.png</code>(training/validation loss and accuracy)와 <code class="language-plaintext highlighter-rouge">model.pth</code>가 만들어진다.</p>
 
 <h2 id="2-implementing-a-convolutional-neural-networkcnn">2. Implementing a Convolutional Neural Network(CNN)</h2>
+
 <figure style="text-align: center">
 <img src="/images/posts/06_cnn_pytorch/Implementing_a_convnet.png" width="100%" />
 	<span style="font-size: 0.8em; color:gray;"><figcaption align="center">
@@ -254,11 +260,13 @@
 </figure>
 
 <p>Lenet 아키텍쳐는 다음과 같은 Layer 구조를 따른다.</p>
+
 <blockquote class="shadow-grey">
-(CONV =&gt; RELU =&gt; POOL) * 2 =&gt; FC =&gt; RELU =&gt; FC =&gt; SOFTMAX
+  <p>(CONV =&gt; RELU =&gt; POOL) * 2 =&gt; FC =&gt; RELU =&gt; FC =&gt; SOFTMAX</p>
 </blockquote>
 
 <p>CNN을 구현해보자. 첫번째로 먼저 필요한 라이브러리를 import 한다.</p>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># import the necessary packages
 </span><span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">Module</span>
 <span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">Conv2d</span>
@@ -315,6 +323,7 @@
 <p><strong><em>이중 가장 좋은 점은 우리가 올바르게 모델 아키텍쳐를 정의하기만 하면 파이토치는 자동적으로 자동 미분과 역전파를 수행한다.</em></strong></p>
 
 <p><span class="shadow-grey">LeNet</span>클래스는 2가지 변수를 받난다.</p>
+
 <ol>
   <li><span class="shadow-grey">numChannels</span>: input이미지의 채널수(1: grayscale, 3: RGB)</li>
   <li><span class="shadow-grey">classes</span>: 중복이 되지 않는 데이터셋의 고유 클래스</li>
@@ -405,6 +414,7 @@
 <p><span class="shadow-grey">matplotlib</span>를 import하고 background engine을 “Agg”로 바꾼다.</p>
 
 <p>command line arguments는 다음과 같다.</p>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># construct the argument parser and parse the arguments
 </span><span class="n">ap</span> <span class="o">=</span> <span class="n">argparse</span><span class="p">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 <span class="n">ap</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">"-m"</span><span class="p">,</span> <span class="s">"--model"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
@@ -415,12 +425,14 @@
 </code></pre></div></div>
 
 <p>여기에서 우리는 2개의 arguments를 파싱한다.</p>
+
 <ol>
-  <li><span class="shadow-grey">--model</span> : 모델이 저장될 경로</li>
-  <li><span class="shadow-grey">--plot</span> : training history plot이 저장될 경로</li>
+  <li><span class="shadow-grey">–model</span> : 모델이 저장될 경로</li>
+  <li><span class="shadow-grey">–plot</span> : training history plot이 저장될 경로</li>
 </ol>
 
 <p>모델을 학습하기 위한 파라미터를 정의한다.</p>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># define training hyperparameters
 </span><span class="n">INIT_LR</span> <span class="o">=</span> <span class="mf">1e-3</span>
 <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">64</span>
@@ -434,8 +446,7 @@
 </span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">"cuda"</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">"cpu"</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p>학습률, batch_size, epochf를 정의하고, train과 validation을 (4 : 1)로 분류한다.
-데이터셋을 다운 받자. 코드는 다음과 같다.</p>
+<p>학습률, batch_size, epochf를 정의하고, train과 validation을 (4 : 1)로 분류한다. 데이터셋을 다운 받자. 코드는 다음과 같다.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># load the KMNIST dataset
 </span><span class="k">print</span><span class="p">(</span><span class="s">"[INFO] loading the KMNIST dataset..."</span><span class="p">)</span>
@@ -495,6 +506,7 @@
 <p>optimizer와 loss function을 초기화한다. 우리는 <span class="shadow-grey">Adam optimizer</span>와 <span class="shadow-grey">negative log-likelihood</span>를 사용한다. 그리고 이 것을 <span class="shadow-grey">nn.NLLoss</span>와 <span class="shadow-grey">LogSoftmax</span>와 연결한다.</p>
 
 <p>이제 모델 training을 해보자.</p>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># loop over our epochs
 </span><span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">EPOCHS</span><span class="p">)):</span>
 	<span class="c1"># set the model in training mode
@@ -532,6 +544,7 @@
 </code></pre></div></div>
 
 <p>이제 우리는 다음과 같은 절차를 따른다.</p>
+
 <ol>
   <li>model mode를 <span class="shadow-grey blue">train()</span> mode로 변경한다.</li>
   <li>우리의 training loss와 validation loss를 현재 epoch에서 초기화한다.</li>
@@ -539,6 +552,7 @@
 </ol>
 
 <p>이게 완료되었으면 다음 스텝으로 넘어간다.</p>
+
 <ol>
   <li>gradient를 0으로 만든다.</li>
   <li>역전파를 수행한다.</li>
@@ -569,6 +583,7 @@
 </code></pre></div></div>
 
 <p>검증데이터셋에서 PyTorch 모델을 평가할 때는 다음을 명시하자.</p>
+
 <ol>
   <li><span class="shadow-grey blue">torch.no_grad()</span>: 자동미분을 끈다.</li>
   <li>model를 평가모드로 바꾼다. <span class="shadow-grey blue">model.eval()</span></li>
@@ -597,6 +612,7 @@
 </code></pre></div></div>
 
 <p>위 코드블럭은 training과 validation loss의 평균을 계산한다. 훈련은 완료되었다.</p>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># finish measuring how long training took
 </span><span class="n">endTime</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
 <span class="k">print</span><span class="p">(</span><span class="s">"[INFO] total time taken to train the model: {:.2f}s"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span>
@@ -609,7 +625,7 @@
 </span><span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="n">no_grad</span><span class="p">():</span>
 	<span class="c1"># set the model in evaluation mode
 </span>	<span class="n">model</span><span class="p">.</span><span class="nb">eval</span><span class="p">()</span>
-	
+
 	<span class="c1"># initialize a list to store our predictions
 </span>	<span class="n">preds</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -738,6 +754,7 @@ weighted avg       0.95      0.95      0.95     10000
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">ls </span>output/
 model.pth	plot.png
 </code></pre></div></div>
+
 <p><span class="shadow-grey">model.pth</span>파일은 우리가 훈련한 모델이고 disk에 저장된다. 그리고 예측할 때는 이 모델을 불러와서 사용한다.</p>
 
 <h2 id="implementing-our-pytorch-prediction-script">Implementing our PyTorch prediction script</h2>
@@ -758,6 +775,7 @@ model.pth	plot.png
 </code></pre></div></div>
 
 <p>필요한 라이브러리를 로드하고 코드의 재사용성을 위해 seed를 설정한다.</p>
+
 <ul>
   <li><span class="shadow-grey">DataLoader</span> : 우리의 KMNIST test 데이터를 사용한다.</li>
   <li><span class="shadow-grey">Subset</span> : testing data</li>
@@ -767,6 +785,7 @@ model.pth	plot.png
 </ul>
 
 <p>command line arguments를 parsing한다.</p>
+
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># construct the argument parser and parse the arguments
 </span><span class="n">ap</span> <span class="o">=</span> <span class="n">argparse</span><span class="p">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
 <span class="n">ap</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">"-m"</span><span class="p">,</span> <span class="s">"--model"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
@@ -774,8 +793,7 @@ model.pth	plot.png
 <span class="n">args</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">ap</span><span class="p">.</span><span class="n">parse_args</span><span class="p">())</span>
 </code></pre></div></div>
 
-<p>여기서는 우리는 1개의 argument만 사용한다. 
-<span class="shadow-grey">--model</span> : 우리가 훈련한 모델 객체이다.</p>
+<p>여기서는 우리는 1개의 argument만 사용한다. <span class="shadow-grey">–model</span> : 우리가 훈련한 모델 객체이다.</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># set the device we will be using to test the model
 </span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">device</span><span class="p">(</span><span class="s">"cuda"</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">"cpu"</span><span class="p">)</span>
@@ -794,6 +812,7 @@ model.pth	plot.png
 </span><span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"model"</span><span class="p">]).</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 <span class="n">model</span><span class="p">.</span><span class="nb">eval</span><span class="p">()</span>
 </code></pre></div></div>
+
 <p>KMNIST 데이터 세트에서 테스트 데이터를 로드한다. 우리는 Subset 클래스를 사용하여 이 데이터 세트의 총 10개의 이미지를 무작위로 샘플링한다.</p>
 
 <p>모델을 통해 테스트 데이터의 하위 집합을 전달하기 위해 DataLoader가 생성한다.</p>
@@ -809,11 +828,11 @@ model.pth	plot.png
 		<span class="c1"># grab the original image and ground truth label
 </span>		<span class="n">origImage</span> <span class="o">=</span> <span class="n">image</span><span class="p">.</span><span class="n">numpy</span><span class="p">().</span><span class="n">squeeze</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 		<span class="n">gtLabel</span> <span class="o">=</span> <span class="n">testData</span><span class="p">.</span><span class="n">dataset</span><span class="p">.</span><span class="n">classes</span><span class="p">[</span><span class="n">label</span><span class="p">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span>
-        
+
 		<span class="c1"># send the input to the device and make predictions on it
 </span>		<span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 		<span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-        
+
 		<span class="c1"># find the class label index with the largest corresponding
 </span>		<span class="c1"># probability
 </span>		<span class="n">idx</span> <span class="o">=</span> <span class="n">pred</span><span class="p">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">).</span><span class="n">cpu</span><span class="p">().</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -875,7 +894,6 @@ model.pth	plot.png
 <span class="o">[</span>INFO] ground truth label: na, predicted label: na
 <span class="o">[</span>INFO] ground truth label: ki, predicted label: ki
 <span class="o">[</span>INFO] ground truth label: tsu, predicted label: tsu
-
 </code></pre></div></div>
 
 <figure style="text-align: center">
@@ -914,7 +932,7 @@ model.pth	plot.png
     </li>
     <li class="share__item">
       <a class="share__link share__linkedin"
-        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/cnn-pytorch&title=PyTorch-Training%20first%20Convolutional%20Neural%20Network%20(CNN)&summary=%EA%B0%9D%EC%B2%B4%20%EC%A7%80%ED%96%A5%20%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D%EC%97%90%EC%84%9C%20%EC%9E%90%EC%B2%B4%20%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EA%B3%84%EC%B8%B5%EC%9D%84%20%EB%A7%8C%EB%93%A4%EC%96%B4%EC%84%9C%20%EC%9E%AC%EC%82%AC%EC%9A%A9%ED%95%98%EA%B1%B0%EB%82%98%20%EB%8D%94%20%EB%B3%B5%EC%9E%A1%ED%95%9C%20%EC%8B%A0%EA%B2%BD%EB%A7%9D%EC%9D%84%20%EB%A7%8C%EB%93%9C%EB%8A%94%20%EB%B0%A9%EB%B2%95&source=Woohyeon"
+        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/cnn-pytorch&title=PyTorch-Training%20first%20Convolutional%20Neural%20Network%20(CNN)&summary=pytorch%EC%97%90%EC%84%9C%20KMNIST%EB%A5%BC%20%EB%B6%88%EB%9F%AC%EC%99%80%EC%84%9C%20%EC%9D%B4%EB%AF%B8%EC%A7%80%EB%A5%BC%20%EB%B6%88%EB%9F%AC%EC%98%A4%EA%B3%A0,%20opencv%EB%A5%BC%20%EC%9D%B4%EC%9A%A9%ED%95%98%EC%97%AC%20%EA%B0%84%EB%8B%A8%ED%95%9C%20%EC%8B%9C%EA%B0%81%ED%99%94%EB%A5%BC%20%ED%95%B4%EB%B3%B8%EB%8B%A4.&source=Woohyeon"
         onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
         title="Share on LinkedIn" rel="nofollow"><i class="ion ion-logo-linkedin"></i></a>
     </li>
@@ -967,6 +985,8 @@ model.pth	plot.png
                 
                   
                     <a href="/tags#pytorch" class="section__link related-tag">See all<span> pytorch</span> <i class="ion ion-md-arrow-forward"></i></a>
+                  
+                
                   
                 
                   
