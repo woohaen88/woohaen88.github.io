@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>PyTorch image classification with pre-trained networks</title>
+  <meta name='description' content='pytorch에서 KMNIST를 불러와서 이미지를 불러오고, opencv를 이용하여 간단한 시각화를 해본다.'>
+
+  <link rel="canonical" href="/blog/cnn-image-classification-pretrained">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PyTorch image classification with pre-trained networks – woohyeon">
+  <meta name="twitter:description" content="pytorch에서 KMNIST를 불러와서 이미지를 불러오고, opencv를 이용하여 간단한 시각화를 해본다.">
+  <meta name="twitter:image:src" content="/images/posts/07_CNN-image_classification_pretrained/thumbnail.png">
+
+  <!-- Facebook OpenGraph -->
+  <meta property="og:title" content="PyTorch image classification with pre-trained networks – woohyeon">
+  <meta property="og:description" content="pytorch에서 KMNIST를 불러와서 이미지를 불러오고, opencv를 이용하여 간단한 시각화를 해본다.">
+  <meta property="og:image" content="/images/posts/07_CNN-image_classification_pretrained/thumbnail.png">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
+  <!-- Ionicons -->
+  <link href="https://unpkg.com/ionicons@4.5.0/dist/css/ionicons.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+
+<body>
+
+    
+
+    <!-- begin header -->
+<header class="c-header">
+  <div class="container">
+    <div class="row">
+      <div class="c-header__inner">
+
+        <div class="logo">
+          <a class="logo__link" href="/">
+          
+            <img class="logo__image" src="/uploads/logo-blank.png" alt="woohyeon">
+          
+          </a>
+        </div>
+
+        <nav class="main-nav">
+          <div class="main-nav__box">
+
+            <div class="nav__icon-close">
+              <i class="ion ion-md-close"></i>
+            </div>
+
+            <div class="nav__title">Menu</div>
+
+              <ul class="nav__list list-reset">
+
+              
+                
+                <li class="nav__item">
+                  <a href="/" class="nav__link">Home</a>
+                </li>
+                
+              
+                
+                <li class="nav__item">
+                  <a href="/projects/" class="nav__link">Projects</a>
+                </li>
+                
+              
+                
+                <li class="nav__item">
+                  <a href="/blog/" class="nav__link">Blog</a>
+                </li>
+                
+              
+                
+                <li class="nav__item dropdown">
+                  <span class="nav__link dropdown-toggle">Pages <i class="ion ion-ios-arrow-down arrow-down"></i></span>
+                  <div class="dropdown-menu">
+                    
+                      <a href="/about/" class="nav__link">About</a>
+                    
+                      <a href="/elements/" class="nav__link">Elements</a>
+                    
+                  </div>
+                </li>
+
+                
+              
+
+            </ul>
+          </div>
+
+          <!--bookshop-live name(social-link.jekyll.html) params() context() -->
+          
+<div class="social">
+  <ul class="social__list list-reset">
+    
+    <li class="social__item">
+      <a class="social__link" href="https://twitter.com" target="_blank" rel="noopener" aria-label="twitter icon"><i class="ion ion-logo-twitter"></i></a>
+    </li>
+    
+    <li class="social__item">
+      <a class="social__link" href="https://github.com/woohaen88" target="_blank" rel="noopener" aria-label="github icon"><i class="ion ion-logo-github"></i></a>
+    </li>
+    
+    <li class="social__item">
+      <a class="social__link" href="https://pinterest.com" target="_blank" rel="noopener" aria-label="pinterest icon"><i class="ion ion-logo-pinterest"></i></a>
+    </li>
+    
+    <li class="social__item">
+      <a class="social__link" href="https://youtube.com" target="_blank" rel="noopener" aria-label="youtube icon"><i class="ion ion-logo-youtube"></i></a>
+    </li>
+    
+  </ul>
+</div>
+
+          <!--bookshop-live end-->
+        </nav>
+
+        <div class="nav-button">
+          <i class="nav__icon nav__icon-menu ion ion-md-menu"></i>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</header>
+<!-- end header -->
+
+    <div class="post-top">
+  <div class="container">
+    <div class="row">
+
+      
+
+        <div class="align_c">
+          <img loading="lazy" src="/images/posts/07_CNN-image_classification_pretrained/thumbnail.png" alt="PyTorch image classification with pre-trained networks" />
+        </div>
+
+      
+
+      <div>
+        <div class="post__info">
+
+          
+          <div class="post-tags">
+            
+              <a href="/tag/pytorch" class="post-tags__tag">pytorch</a>
+            
+              <a href="/tag/pretrained" class="post-tags__tag">pretrained</a>
+            
+              <a href="/tag/cnn" class="post-tags__tag">CNN</a>
+            
+          </div>
+          
+
+
+          <h1 class="post__title">PyTorch image classification with pre-trained networks</h1>
+
+          <div class="post__meta">
+            <div class="post__author-image">
+              <img loading="lazy" src="/uploads/profile.jpeg" alt="Kim WooHyeon" />
+            </div>
+
+            <div class="post__meta-bottom">
+              <div class="post__author">Kim WooHyeon</div>
+              <time class="post__date" datetime="2022-01-01T00:02:00+00:00">01 Jan 2022</time>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- begin post -->
+<div class="container animate">
+
+  <article class="post">
+
+    <div class="post__content" data-cms-content-wrapper="/site/_layouts/post.html">
+      <p>이번 포스트에서는 PyTorch를 사용하여 사전 훈련된 네트워크로 이미지 분류를 수행하는 방법을 알아본다. 이러한 네트워크를 활용하면 몇 줄의 코드로 공통 개체 범주를 정확하게 분류할 수 있다.</p>
+
+<h1 id="pytorch-image-classification-with-pre-trained-networks">PyTorch image classification with pre-trained networks</h1>
+
+<p>PyTorch 라이브러리에 내장된 네트워크를 포함하여 사전 훈련된 이미지 분류 네트워크가 무엇인지 알아본다.</p>
+
+<h2 id="1-what-are-pre-trained-image-classification-networks">1. What are pre-trained image classification networks?</h2>
+
+<figure style="text-align: center">
+<img src="/images/posts/07_CNN-image_classification_pretrained/01.webp" width="100%" />
+	<span style="font-size: 0.8em; color:gray;"><figcaption align="center">
+		Figure 1: 가장 널리 사용되는 최첨단 신경망은 ImageNet 데이터 세트에서 사전 훈련된 가중치와 함께 제공된다.
+	</figcaption></span>
+</figure>
+
+<p>이미지 분류와 관련하여 <a href="https://www.image-net.org/">ImageNet</a>보다 더 유명한 데이터 세트/챌린지는 가히 없다고 봐도 무방하다. <strong>ImageNet의 목표는 입력 이미지를 컴퓨터 비전 시스템이 일상 생활에서 “보는” 1,000개의 공통 개체 범주 집합으로 정확하게 분류하는 것이다.</strong></p>
+
+<p>PyTorch, Keras, TensorFlow, fast.ai 등을 포함하여 가장 널리 사용되는 딥러닝 프레임워크에는 <em>사전 훈련된 네트워크</em>가 포함된다. 이것은 컴퓨터 비전 연구원이 ImageNet 데이터 세트에 대해 훈련한 매우 정확한 최신 모델이다.</p>
+
+<p>ImageNet에 대한 훈련이 완료된 후 연구원은 모델을 디스크에 저장한 다음 다른 연구자, 학생 및 개발자가 자신의 프로젝트에서 배우고 사용할 수 있도록 자유롭게 게시했다.</p>
+
+<p>이번 포스팅에서는 PyTorch를 사용하여 다음과 같은 최첨단 분류 네트워크를 사용하여 입력 이미지를 분류하는 방법을 알아보자.</p>
+
+<ul>
+  <li>VGG16</li>
+  <li>VGG19</li>
+  <li>Inception</li>
+  <li>DenseNet</li>
+  <li>ResNet</li>
+</ul>
+
+<h2 id="2-configuring-your-development-environment">2. Configuring your development environment</h2>
+
+<p>PyTorch와 OpenCV는 모두 pip를 사용하여 매우 쉽게 설치할 수 있다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">torch</span> <span class="n">torchvision</span>
+<span class="err">$</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">opencv</span><span class="o">-</span><span class="n">contrib</span><span class="o">-</span><span class="n">python</span>
+</code></pre></div></div>
+<p><br /></p>
+<h2 id="3-project-structure">3. Project structure</h2>
+<p>PyTorch로 이미지 분류를 구현하기 전에 먼저 프로젝트 디렉토리 구조를 확인해보자.</p>
+
+<pre><code class="language-txt">$ tree . --dirsfirst
+.
+├── images
+│   ├── bmw.png
+│   ├── boat.png
+│   ├── clint_eastwood.jpg
+│   ├── jemma.png
+│   ├── office.png
+│   ├── scotch.png
+│   ├── soccer_ball.jpg
+│   └── tv.png
+├── ururuMLlib
+│   └── config.py
+├── classify_image.py
+└── ilsvrc2012_wordnet_lemmas.txt
+</code></pre>
+<p><span class="shadow-grey">ururuMLlib</span> 모듈 내부에는 <span class="shadow-grey">config.py</span> 라는 단일 파일이 있다. 이 파일은 다음과 같은 구성을 저장한다.</p>
+
+<ul>
+  <li>입력 이미지 크기</li>
+  <li>스케일링에 대한 평균 및 표준 편차</li>
+  <li>훈련에 GPU를 사용하는지 여부</li>
+  <li>ImageNet 클래스 레이블 경로(i.e.,: <span class="shadow-grey">ilsvrc2012_wordnet_lemmas.txt</span>)
+<span class="shadow-grey">classify_image.py</span> 스크립트는 <span class="shadow-grey">config</span>를 로드한 다음 VGG16, VGG19, Inception, DenseNet 또는 ResNet을 사용하여 입력이미지를 분류한다.(명령줄 인수로 제공하는 모델 아키텍처에 따라 다름)</li>
+</ul>
+
+<p><span class="shadow-grey">images</span> 디렉토리에는 이러한 이미지 분류 네트워크를 적용할 샘플 이미지가 있다.</p>
+
+<h2 id="4-creating-our-configuration-file">4. Creating our configuration file</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># import the necessary packages
+</span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="c1"># specify image dimension
+</span><span class="n">IMAGE_SIZE</span> <span class="o">=</span> <span class="mi">224</span>
+
+<span class="c1"># specify ImageNet mean and standard deviation
+</span><span class="n">MEAN</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">]</span>
+<span class="n">STD</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">]</span>
+
+<span class="c1"># determine the device we will be using for inference
+</span><span class="n">DEVICE</span> <span class="o">=</span> <span class="s">"cuda"</span> <span class="k">if</span> <span class="n">torch</span><span class="p">.</span><span class="n">cuda</span><span class="p">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s">"cpu"</span>
+
+<span class="c1"># specify path to the ImageNet labels
+</span><span class="n">IN_LABELS</span> <span class="o">=</span> <span class="s">"ilsvrc2012_wordnet_lemmas.txt"</span>
+</code></pre></div></div>
+<p>위 코드에서는 입력 이미지 공간 치수를 정의한다. 즉, 각 이미지는 분류를 위해 사전 훈련된 PyTorch 네트워크를 통과하기 전에 <em>224x224</em> 픽셀로 크기가 조정된다.</p>
+
+<p><span class="note">Note: ImageNet 데이터 세트에서 훈련된 대부분의 네트워크는 <em>224x224</em> 또는 <em>227x227</em> 이미지를 허용한다. 일부 네트워크, 특히 컨볼루션 네트워크는 더 큰 이미지 차원을 허용한다.<span></span></span></p>
+
+<p>여기에서 우리는 훈련 세트에서 RGB 픽셀 강도의 평균과 표준 편차를 정의한다. 분류를 위해 네트워크를 통해 입력 이미지를 전달하기 전에 먼저 평균을 뺀 다음 표준 편차로 나누어 이미지 픽셀 강도를 조정한다(표준화). 이 전처리는 ImageNet과 같은 크고 다양한 이미지 데이터 세트에서 훈련된 CNN에 일반적이다.</p>
+
+<p>훈련에 CPU를 사용할지 GPU를 사용할지 지정하고 ImageNet 클래스 레이블의 입력 텍스트 파일에 대한 경로를 정의한다.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tench, Tinca_tinca
+goldfish, Carassius_auratus
+...
+bolete
+ear, spike, capitulum
+toilet_tissue, toilet_paper, bathroom_tissue
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="5-implementing-our-image-classification-script">5. Implementing our image classification script</h3>
+
+<p>구성 파일을 처리한 상태에서 사전 훈련된 PyTorch 네트워크를 사용하여 입력 이미지를 분류하는 데 사용되는 기본 드라이버 스크립트를 구현해 보겠습니다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># import the necessary packages
+</span><span class="kn">from</span> <span class="nn">pyimagesearch</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+</code></pre></div></div>
+
+<ul>
+  <li><span class="shadow-grey">config</span>:  구성 파일</li>
+  <li><span class="shadow-grey">models</span>: PyTorch의 사전 훈련된 신경망 포함</li>
+  <li><span class="shadow-grey">numpy</span>: 숫자 배열 처리</li>
+  <li><span class="shadow-grey">torch</span>: PyTorch API에 액세스</li>
+  <li><span class="shadow-grey">cv2</span>: OpenCV 바인딩</li>
+</ul>
+
+<p>이미지를 가져오기를 처리한 상태에서 입력 이미지를 수락하고 사전 처리하는 함수를 정의하자.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">preprocess_image</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+	<span class="c1"># swap the color channels from BGR to RGB, resize it, and scale
+</span>	<span class="c1"># the pixel values to [0, 1] range
+</span>	<span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="p">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cv2</span><span class="p">.</span><span class="n">COLOR_BGR2RGB</span><span class="p">)</span>
+	<span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">IMAGE_SIZE</span><span class="p">,</span> <span class="n">config</span><span class="p">.</span><span class="n">IMAGE_SIZE</span><span class="p">))</span>
+	<span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">.</span><span class="n">astype</span><span class="p">(</span><span class="s">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="mf">255.0</span>
+
+	<span class="c1"># subtract ImageNet mean, divide by ImageNet standard deviation,
+</span>	<span class="c1"># set "channels first" ordering, and add a batch dimension
+</span>	<span class="n">image</span> <span class="o">-=</span> <span class="n">config</span><span class="p">.</span><span class="n">MEAN</span>
+	<span class="n">image</span> <span class="o">/=</span> <span class="n">config</span><span class="p">.</span><span class="n">STD</span>
+	<span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+	<span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+	
+	<span class="c1"># return the preprocessed image
+</span>	<span class="k">return</span> <span class="n">image</span>
+</code></pre></div></div>
+<p><span class="shadow-grey">preprocess_image</span>함수는 분류를 위해 사전 처리할 이미지인 <span class="shadow-grey">image</span> 라는 단일 인수를 사용한다.</p>
+
+<p>다음과 같이 전처리 작업을 시작한다.</p>
+
+<ol>
+  <li>BGR에서 RGB 채널 순서로 스와핑(여기에서 사용하는 사전 훈련된 네트워크는 RGB 채널 순서를 사용하는 반면 OpenCV는 기본적으로 BGR 순서를 사용함)</li>
+  <li>종횡비를 무시하고 이미지 크기를 고정 치수(예: 224×224)로 조정</li>
+  <li>이미지를 부동 소수점 데이터 유형으로 변환한 다음 픽셀을 [0, 1] 범위로 조정</li>
+</ol>
+
+<p>여기에서 두 번째 전처리 작업 세트를 수행한다.
+그런 다음 전처리된 <span class="shadow-grey">image</span>가 호출 함수로 리턴된다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># construct the argument parser and parse the arguments
+</span><span class="n">ap</span> <span class="o">=</span> <span class="n">argparse</span><span class="p">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="n">ap</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">"-i"</span><span class="p">,</span> <span class="s">"--image"</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+	<span class="n">help</span><span class="o">=</span><span class="s">"path to the input image"</span><span class="p">)</span>
+<span class="n">ap</span><span class="p">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">"-m"</span><span class="p">,</span> <span class="s">"--model"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">"vgg16"</span><span class="p">,</span>
+	<span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s">"vgg16"</span><span class="p">,</span> <span class="s">"vgg19"</span><span class="p">,</span> <span class="s">"inception"</span><span class="p">,</span> <span class="s">"densenet"</span><span class="p">,</span> <span class="s">"resnet"</span><span class="p">],</span>
+	<span class="n">help</span><span class="o">=</span><span class="s">"name of pre-trained network to use"</span><span class="p">)</span>
+<span class="n">args</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">ap</span><span class="p">.</span><span class="n">parse_args</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p>두 개의 명령줄 인수가 있다.</p>
+
+<ol>
+  <li><span class="shadow-grey">--image</span>: 분류하려는 입력 이미지의 경로</li>
+  <li><span class="shadow-grey">--model</span>: 이미지를 분류하는 데 사용할 사전 훈련된 CNN 모델</li>
+</ol>
+
+<p>이제 <span class="shadow-grey">--model</span> 명령줄 인수의 이름을 해당 PyTorch 함수에 매핑하는 <span class="shadow-grey">MODELS</span> dictionary를 정의하자.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># define a dictionary that maps model names to their classes
+# inside torchvision
+</span><span class="n">MODELS</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="s">"vgg16"</span><span class="p">:</span> <span class="n">models</span><span class="p">.</span><span class="n">vgg16</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+	<span class="s">"vgg19"</span><span class="p">:</span> <span class="n">models</span><span class="p">.</span><span class="n">vgg19</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+	<span class="s">"inception"</span><span class="p">:</span> <span class="n">models</span><span class="p">.</span><span class="n">inception_v3</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+	<span class="s">"densenet"</span><span class="p">:</span> <span class="n">models</span><span class="p">.</span><span class="n">densenet121</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+	<span class="s">"resnet"</span><span class="p">:</span> <span class="n">models</span><span class="p">.</span><span class="n">resnet50</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1"># load our the network weights from disk, flash it to the current
+# device, and set it to evaluation mode
+</span><span class="k">print</span><span class="p">(</span><span class="s">"[INFO] loading {}..."</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"model"</span><span class="p">]))</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MODELS</span><span class="p">[</span><span class="n">args</span><span class="p">[</span><span class="s">"model"</span><span class="p">]].</span><span class="n">to</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">model</span><span class="p">.</span><span class="nb">eval</span><span class="p">()</span>
+</code></pre></div></div>
+<p><span class="shadow-grey">MODEL</span> dictionary를 생성한다.</p>
+
+<ul>
+  <li>dictionary의 <em>핵심</em>은 human-readable 모델 이름이며 <span class="shadow-grey">--model</span> 명령줄 인수를 통해 전달된다.</li>
+  <li>dictionary에 대한 <em>값</em>은 ImageNet에서 사전 훈련된 가중치로 모델을 로드하는 데 사용되는 해당 PyTorch 함수이다.</li>
+</ul>
+
+<p>다음 사전 훈련된 모델을 사용하여 PyTorch로 입력 이미지를 분류할 수 있다.</p>
+
+<ol>
+  <li>VGG16</li>
+  <li>VGG19</li>
+  <li>Inception</li>
+  <li>DenseNet</li>
+  <li>ResNet</li>
+</ol>
+
+<p><span class="shadow-grey">pretrained=True</span> 플래그를 지정하면 PyTorch가 모델 아키텍처 정의를 로드할 뿐만 아니라 모델에 대해 사전 훈련된 ImageNet 가중치도 다운로드하도록 지시한다.</p>
+
+<p>모델과 사전 훈련된 가중치를 로드한 다음(모델 가중치를 다운로드한 적이 없는 경우 자동으로 다운로드되어 캐시된다.) 그런 다음 <span class="shadow-grey">DEVICE</span>에 따라 CPU 또는 GPU에서 실행되도록 모델을 설정한다.</p>
+
+<p><span class="shadow-grey">model</span>을 평가 모드로 전환하여 PyTorch가 훈련 중 처리하는 방식과 다른 특수 계층(예: dropout 및 배치 정규화)을 처리하도록 지시한다. <strong><em>예측을 하기 전에 모델을 평가 모드로 전환하는 것이 중요하다.</em></strong></p>
+
+<p>이제 모델이 로드되었으므로 입력 이미지가 필요하다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># load the image from disk, clone it (so we can draw on it later),
+# and preprocess it
+</span><span class="k">print</span><span class="p">(</span><span class="s">"[INFO] loading image..."</span><span class="p">)</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">cv2</span><span class="p">.</span><span class="n">imread</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"image"</span><span class="p">])</span>
+<span class="n">orig</span> <span class="o">=</span> <span class="n">image</span><span class="p">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">preprocess_image</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+<span class="c1"># convert the preprocessed image to a torch tensor and flash it to
+# the current device
+</span><span class="n">image</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">DEVICE</span><span class="p">)</span>
+
+<span class="c1"># load the preprocessed the ImageNet labels
+</span><span class="k">print</span><span class="p">(</span><span class="s">"[INFO] loading ImageNet labels..."</span><span class="p">)</span>
+<span class="n">imagenetLabels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">IN_LABELS</span><span class="p">)))</span>
+</code></pre></div></div>
+<p>디스크에서 입력 <span class="shadow-grey">image</span>를 로드한다. 이 것을 복사하고 네트워크의 상위 예측을 시각화할 수 있도록 한다. 또한 위에서 설정한 <span class="shadow-grey">preprocess_image</span>함수를 사용하여 크기 조정 및 스케일링을 수행한다.</p>
+
+<p>마지막으로 디스크에서 입력 ImageNet 클래스 레이블을 로드한다.</p>
+
+<p>이제 <span class="shadow-grey">model</span>을 사용하여 입력 <span class="shadow-grey">image</span>를 예측할 준비가 되었다.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># classify the image and extract the predictions
+</span><span class="k">print</span><span class="p">(</span><span class="s">"[INFO] classifying image with '{}'..."</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">"model"</span><span class="p">]))</span>
+<span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<span class="n">probabilities</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">Softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)(</span><span class="n">logits</span><span class="p">)</span>
+<span class="n">sortedProba</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># loop over the predictions and display the rank-5 predictions and
+# corresponding probabilities to our terminal
+</span><span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sortedProba</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="mi">5</span><span class="p">]):</span>
+	<span class="k">print</span><span class="p">(</span><span class="s">"{}. {}: {:.2f}%"</span><span class="p">.</span><span class="nb">format</span>
+		<span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">imagenetLabels</span><span class="p">[</span><span class="n">idx</span><span class="p">.</span><span class="n">item</span><span class="p">()].</span><span class="n">strip</span><span class="p">(),</span>
+		<span class="n">probabilities</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx</span><span class="p">.</span><span class="n">item</span><span class="p">()]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>위 코드는 네트워크의 순방향 전달을 수행하여 네트워크의 출력을 만든다. 이것을 <span class="shadow-grey">Softmax</span> 함수를 통해 전달하여 <span class="shadow-grey">model</span>이 훈련된 가능한 1,000개의 클래스 레이블 각각에 대한 예측 확률을 얻는다.</p>
+
+<p>그런 다음 목록의 맨 앞에 더 높은 확률로 내림차순으로 확률을 정렬한다. 그런 다음 다음과 같이 터미널에 상위 5개 예측 클래스 레이블과 해당 확률을 표시하도록 한다.</p>
+
+<ul>
+  <li>상위 5개 예측에 대한 반복</li>
+  <li><span class="shadow-grey">imagenetLabels</span> 사전을 사용하여 클래스 레이블 이름 찾기</li>
+  <li>예측 확률 표시</li>
+</ul>
+
+<p>최종 코드 블록은 출력 이미지에 상위 1개(즉, 상위 예측 레이블)를 그린다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># draw the top prediction on the image and display the image to
+# our screen
+</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">prob</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">imagenetLabels</span><span class="p">[</span><span class="n">probabilities</span><span class="p">.</span><span class="n">argmax</span><span class="p">().</span><span class="n">item</span><span class="p">()],</span>
+	<span class="n">probabilities</span><span class="p">.</span><span class="nb">max</span><span class="p">().</span><span class="n">item</span><span class="p">())</span>
+<span class="n">cv2</span><span class="p">.</span><span class="n">putText</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="s">"Label: {}, {:.2f}%"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">label</span><span class="p">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">prob</span> <span class="o">*</span> <span class="mi">100</span><span class="p">),</span>
+	<span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="n">cv2</span><span class="p">.</span><span class="n">FONT_HERSHEY_SIMPLEX</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">cv2</span><span class="p">.</span><span class="n">imshow</span><span class="p">(</span><span class="s">"Classification"</span><span class="p">,</span> <span class="n">orig</span><span class="p">)</span>
+<span class="n">cv2</span><span class="p">.</span><span class="n">waitKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div></div>
+<h3 id="image-classification-with-pytorch-results">Image classification with PyTorch results</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>python classify_image.py <span class="nt">--image</span> images/boat.png
+<span class="o">[</span>INFO] loading vgg16...
+<span class="o">[</span>INFO] loading image...
+<span class="o">[</span>INFO] loading ImageNet labels...
+<span class="o">[</span>INFO] classifying image with <span class="s1">'vgg16'</span>...
+0. wreck: 99.99%
+1. seashore, coast, seacoast, sea-coast: 0.01%
+2. pirate, pirate_ship: 0.00%
+3. breakwater, groin, groyne, mole, bulwark, seawall, jetty: 0.00%
+4. sea_lion: 0.00%
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h3 id="the-kmnist-dataset">The KMNIST dataset</h3>
+
+<figure style="text-align: center">
+<img src="/images/posts/07_CNN-image_classification_pretrained/wreck.png" width="100%" />
+	<span style="font-size: 0.8em; color:gray;"><figcaption align="center">
+		Figure 2: Using PyTorch and VGG16 to classify an input image.
+	</figcaption></span>
+</figure>
+
+<p>확실히 VGG16 네트워크는 99.99% 확률로 입력 이미지를 “난파선”으로 올바르게 분류할 수 있다.</p>
+
+<p>“해변”이 모델에서 두 번째로 높은 예측이라는 것도 정확하다. 이번에는 DenseNet 모델을 사용하여 다른 이미지를 사용해 보겠다.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">$</span> <span class="n">python</span> <span class="n">classify_image</span><span class="p">.</span><span class="n">py</span> <span class="o">--</span><span class="n">image</span> <span class="n">images</span><span class="o">/</span><span class="n">bmw</span><span class="p">.</span><span class="n">png</span> <span class="o">--</span><span class="n">model</span> <span class="n">densenet</span>
+<span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">loading</span> <span class="n">densenet</span><span class="p">...</span>
+<span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">loading</span> <span class="n">image</span><span class="p">...</span>
+<span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">loading</span> <span class="n">ImageNet</span> <span class="n">labels</span><span class="p">...</span>
+<span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">classifying</span> <span class="n">image</span> <span class="k">with</span> <span class="s">'densenet'</span><span class="p">...</span>
+<span class="mf">0.</span> <span class="n">convertible</span><span class="p">:</span> <span class="mf">96.61</span><span class="o">%</span>
+<span class="mf">1.</span> <span class="n">sports_car</span><span class="p">,</span> <span class="n">sport_car</span><span class="p">:</span> <span class="mf">2.25</span><span class="o">%</span>
+<span class="mf">2.</span> <span class="n">car_wheel</span><span class="p">:</span> <span class="mf">0.45</span><span class="o">%</span>
+<span class="mf">3.</span> <span class="n">beach_wagon</span><span class="p">,</span> <span class="n">station_wagon</span><span class="p">,</span> <span class="n">wagon</span><span class="p">,</span> <span class="n">estate_car</span><span class="p">,</span> <span class="n">beach_waggon</span><span class="p">,</span> <span class="n">station_waggon</span><span class="p">,</span> <span class="n">waggon</span><span class="p">:</span> <span class="mf">0.22</span><span class="o">%</span>
+<span class="mf">4.</span> <span class="n">racer</span><span class="p">,</span> <span class="n">race_car</span><span class="p">,</span> <span class="n">racing_car</span><span class="p">:</span> <span class="mf">0.13</span><span class="o">%</span>
+</code></pre></div></div>
+
+<figure style="text-align: center">
+	<img src="/images/posts/07_CNN-image_classification_pretrained/convertible.png" width="100%" />
+	<span style="font-size: 0.8em; color:gray;">
+		<figcaption align="center">
+			Figure 3: Applying DenseNet and PyTorch to classify an image.
+		</figcaption>
+	</span>
+</figure>
+
+<p>DenseNet의 최고 예측은 96.61%의 정확도로 “contertible”이다. 두 번째 상위 예측인 “sports_car”도 정확하다.</p>
+
+    </div>
+
+    <div class="post__share">
+  <div class="share__head">
+    <div class="share__title">Share this Post</div>
+  </div>
+  <ul class="share__list list-reset">
+    <li class="share__item">
+      <a class="share__link share__twitter"
+        href="https://twitter.com/intent/tweet?text=PyTorch%20image%20classification%20with%20pre-trained%20networks&url=/blog/cnn-image-classification-pretrained"
+        onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
+        title="Share on Twitter" rel="nofollow"><i class="ion ion-logo-twitter"></i></a>
+    </li>
+    <li class="share__item">
+      <a class="share__link share__facebook"
+        href="https://www.facebook.com/sharer/sharer.php?u=/blog/cnn-image-classification-pretrained"
+        onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
+        title="Share on Facebook" rel="nofollow"><i class="ion ion-logo-facebook"></i></a>
+    </li>
+    <li class="share__item">
+      <a class="share__link share__pinterest"
+        href="http://pinterest.com/pin/create/button/?url=/blog/cnn-image-classification-pretrained&amp;media=/images/posts/07_CNN-image_classification_pretrained/thumbnail.png&amp;description=PyTorch%20image%20classification%20with%20pre-trained%20networks"
+        onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;"
+        title="Share on Pinterest" rel="nofollow"><i class="ion ion-logo-pinterest"></i></a>
+    </li>
+    <li class="share__item">
+      <a class="share__link share__linkedin"
+        href="https://www.linkedin.com/shareArticle?mini=true&url=/blog/cnn-image-classification-pretrained&title=PyTorch%20image%20classification%20with%20pre-trained%20networks&summary=pytorch%EC%97%90%EC%84%9C%20KMNIST%EB%A5%BC%20%EB%B6%88%EB%9F%AC%EC%99%80%EC%84%9C%20%EC%9D%B4%EB%AF%B8%EC%A7%80%EB%A5%BC%20%EB%B6%88%EB%9F%AC%EC%98%A4%EA%B3%A0,%20opencv%EB%A5%BC%20%EC%9D%B4%EC%9A%A9%ED%95%98%EC%97%AC%20%EA%B0%84%EB%8B%A8%ED%95%9C%20%EC%8B%9C%EA%B0%81%ED%99%94%EB%A5%BC%20%ED%95%B4%EB%B3%B8%EB%8B%A4.&source=Woohyeon"
+        onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
+        title="Share on LinkedIn" rel="nofollow"><i class="ion ion-logo-linkedin"></i></a>
+    </li>
+  </ul>
+</div>
+
+  </article>
+</div>
+<!-- end post -->
+
+<div class="container">
+  <div class="row">
+    <div class="col col-10 col-d-12 push-d-0 push-1">
+      <div class="post__navigation animate">
+  
+  <a class="post__prev" href="/blog/cnn-pytorch">
+    <div class="prev__image">
+      <img loading="lazy" src="/images/posts/06_cnn_pytorch/thumbnail.png" alt="PyTorch image classification with pre-trained networks">
+    </div>
+    <div class="prev__box">
+      <span class="post__nav post__nav__prev">Prev post</span>
+      <h2 class="post__nav__title">PyTorch-Training first Convolutional Neural Network (CNN)</h2>
+    </div>
+  </a>
+  
+
+  
+</div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+<!-- begin related posts -->
+<div class="container">
+  <section class="related-posts is-related animate">
+    <div class="row">
+      <div class="col col-12">
+        <div class="container__inner">
+          <div class="section__info">
+            <div class="section__head">
+              <h2 class="section__title">You may also like</h2>
+              <a class="section__link" href="/blog">
+                
+                
+                  
+                    <a href="/tags#pytorch" class="section__link related-tag">See all<span> pytorch</span> <i class="ion ion-md-arrow-forward"></i></a>
+                  
+                
+                  
+                
+                  
+                
+              
+              </a>
+            </div>
+          </div>
+          <div class="row">
+
+          
+            
+            
+      
+            
+      
+            
+            
+            
+            
+      
+            
+      
+            
+
+              <div class="article col col-4 col-d-6 col-t-12">
+                <div class="article__inner">
+              
+                  
+                  <div class="image-wrap">
+                    <a class="article__image" href="/blog/cnn-pytorch">
+                      <img loading="lazy" src="/images/posts/06_cnn_pytorch/thumbnail.png" alt="PyTorch-Training first Convolutional Neural Network (CNN)">
+                    </a>
+                  </div>
+                  
+              
+                  <div class="article__content">
+              
+                    
+                    <div class="article-tags__box">
+                      
+                      <a href="/tag/pytorch" class="article__tag">pytorch</a>
+                      
+                      <a href="/tag/module" class="article__tag">Module</a>
+                      
+                      <a href="/tag/cnn" class="article__tag">CNN</a>
+                      
+                    </div>
+                    
+              
+                    <h2 class="article__title">
+                      <a href="/blog/cnn-pytorch">PyTorch-Training first Convolutional Neural Network (CNN)</a>
+                    </h2>
+              
+                    <p class="article__excerpt">
+                      pytorch에서 KMNIST를 불러와서 이미지를 불러오고, opencv를 이용하여 간단한 시각화를 해본다.
+                    </p>
+              
+                    <div class="article__meta">
+                      <div class="article__author-image">
+                        <img loading="lazy" src="/uploads/profile.jpeg" alt="Kim WooHyeon">
+                      </div>
+                      <div class="article-info">
+                        <div class="article__author-name">Kim WooHyeon</div>
+                        <span class="article__date"><time datetime="2022-01-01T00:02:00+00:00">01 Jan 2022</time></span>
+                      </div>
+                    </div>
+              
+                  </div>
+                </div>
+              </div>
+
+            
+                
+              
+            
+            
+            
+      
+            
+      
+            
+
+              <div class="article col col-4 col-d-6 col-t-12">
+                <div class="article__inner">
+              
+                  
+                  <div class="image-wrap">
+                    <a class="article__image" href="/blog/intro-to-pytorch">
+                      <img loading="lazy" src="/images/posts/03_modulization/thumbnail.png" alt="Intro to PyTorch-Training your first neural network using PyTorch">
+                    </a>
+                  </div>
+                  
+              
+                  <div class="article__content">
+              
+                    
+                    <div class="article-tags__box">
+                      
+                      <a href="/tag/pytorch" class="article__tag">pytorch</a>
+                      
+                      <a href="/tag/module" class="article__tag">Module</a>
+                      
+                    </div>
+                    
+              
+                    <h2 class="article__title">
+                      <a href="/blog/intro-to-pytorch">Intro to PyTorch-Training your first neural network using PyTorch</a>
+                    </h2>
+              
+                    <p class="article__excerpt">
+                      객체 지향 프로그래밍에서 자체 신경망 계층을 만들어서 재사용하거나 더 복잡한 신경망을 만드는 방법
+                    </p>
+              
+                    <div class="article__meta">
+                      <div class="article__author-image">
+                        <img loading="lazy" src="/uploads/profile.jpeg" alt="Kim WooHyeon">
+                      </div>
+                      <div class="article-info">
+                        <div class="article__author-name">Kim WooHyeon</div>
+                        <span class="article__date"><time datetime="2021-12-31T00:00:00+00:00">31 Dec 2021</time></span>
+                      </div>
+                    </div>
+              
+                  </div>
+                </div>
+              </div>
+
+            
+                
+              
+            
+            
+            
+      
+            
+      
+            
+
+              <div class="article col col-4 col-d-6 col-t-12">
+                <div class="article__inner">
+              
+                  
+                  <div class="image-wrap">
+                    <a class="article__image" href="/blog/image-handling-convolution">
+                      <img loading="lazy" src="/images/posts/04_image_handling/thumbnail.png" alt="이미지 처리와 합성곱 신경망">
+                    </a>
+                  </div>
+                  
+              
+                  <div class="article__content">
+              
+                    
+                    <div class="article-tags__box">
+                      
+                      <a href="/tag/pytorch" class="article__tag">pytorch</a>
+                      
+                      <a href="/tag/module" class="article__tag">Module</a>
+                      
+                    </div>
+                    
+              
+                    <h2 class="article__title">
+                      <a href="/blog/image-handling-convolution">이미지 처리와 합성곱 신경망</a>
+                    </h2>
+              
+                    <p class="article__excerpt">
+                      작성
+                    </p>
+              
+                    <div class="article__meta">
+                      <div class="article__author-image">
+                        <img loading="lazy" src="/uploads/profile.jpeg" alt="Kim WooHyeon">
+                      </div>
+                      <div class="article-info">
+                        <div class="article__author-name">Kim WooHyeon</div>
+                        <span class="article__date"><time datetime="2021-12-29T00:00:00+00:00">29 Dec 2021</time></span>
+                      </div>
+                    </div>
+              
+                  </div>
+                </div>
+              </div>
+
+            
+                
+                  
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<!-- end related posts -->
+
+
+
+
+
+
+    <!-- 
+        Bookshop components are accessed using the bookshop tag, 
+        using the same syntax as the standard Jekyll include tag.
+    -->
+    <!--bookshop-live name(page.jekyll.html) params(content_blocks=page.content_blocks page_theme=page.page_theme) context() -->
+          
+          <!--bookshop-live end-->
+
+    <div class="top" title="Top"><i class="ion ion-ios-arrow-up"></i></div>
+
+    <!-- begin footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col col-12">
+
+        <!--bookshop-live name(social-link.jekyll.html) params() context() -->
+          
+<div class="social">
+  <ul class="social__list list-reset">
+    
+    <li class="social__item">
+      <a class="social__link" href="https://twitter.com" target="_blank" rel="noopener" aria-label="twitter icon"><i class="ion ion-logo-twitter"></i></a>
+    </li>
+    
+    <li class="social__item">
+      <a class="social__link" href="https://github.com/woohaen88" target="_blank" rel="noopener" aria-label="github icon"><i class="ion ion-logo-github"></i></a>
+    </li>
+    
+    <li class="social__item">
+      <a class="social__link" href="https://pinterest.com" target="_blank" rel="noopener" aria-label="pinterest icon"><i class="ion ion-logo-pinterest"></i></a>
+    </li>
+    
+    <li class="social__item">
+      <a class="social__link" href="https://youtube.com" target="_blank" rel="noopener" aria-label="youtube icon"><i class="ion ion-logo-youtube"></i></a>
+    </li>
+    
+  </ul>
+</div>
+
+          <!--bookshop-live end-->
+
+        <ul class="footer_nav list-reset">
+          
+          <li class="footer_nav__item">
+            <a href="/" class="footer_nav__link">Home</a>
+          </li>
+          
+          <li class="footer_nav__item">
+            <a href="/projects/" class="footer_nav__link">Projects</a>
+          </li>
+          
+          <li class="footer_nav__item">
+            <a href="/elements/" class="footer_nav__link">Elements</a>
+          </li>
+          
+          <li class="footer_nav__item">
+            <a href="/about/" class="footer_nav__link">About</a>
+          </li>
+          
+          <li class="footer_nav__item">
+            <a href="/blog/" class="footer_nav__link">Blog</a>
+          </li>
+          
+        </ul>
+
+        <div class="copyright"><p>2021 &copy; <a href="/">Vonge</a>. Template by <a href="https://cloudcannon.com/">CloudCannon</a>. and Modified ururu</p></div>
+
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- end footer -->
+
+    <!--
+        load the live component for CloudCannon live previews.
+    -->
+    <script>
+(function(){
+  const bookshopLiveSetup = (CloudCannon) => {
+    CloudCannon.enableEvents();
+
+    const head = document.querySelector('head');
+    const script = document.createElement('script');
+    script.src = `/_cloudcannon/bookshop-live.js`;
+    script.onload = function() {
+      window.bookshopLive = new window.BookshopLive({
+        remoteGlobals: ['/_cloudcannon/bookshop-site-data.json']
+      });
+      const updateBookshopLive = async () => {
+        const frontMatter = await CloudCannon.value();
+        const options = window.bookshopLiveOptions || {};
+        await window.bookshopLive.update({page: frontMatter}, options);
+        CloudCannon?.refreshInterface?.();
+      }
+      document.addEventListener('cloudcannon:update', updateBookshopLive);
+      updateBookshopLive();
+    }
+    head.appendChild(script);
+  }
+
+  document.addEventListener('cloudcannon:load', function (e) {
+    bookshopLiveSetup(e.detail.CloudCannon);
+  });
+})();
+</script>
+
+    <script src="/js/scripts.js"></script>
+    <script src="/js/common.js"></script>
+</body>
+</html>
